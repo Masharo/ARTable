@@ -30,8 +30,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
         jvmTarget = "17"
@@ -70,10 +70,9 @@ dependencies {
 
 //Koin
 dependencies {
-    val koin_version = "3.6.0-wasm-alpha2"
-    implementation(platform("io.insert-koin:koin-android:$koin_version"))
+    val koinVersion = "3.5.3"
+    implementation(platform("io.insert-koin:koin-bom:$koinVersion"))
     implementation("io.insert-koin:koin-core")
-    implementation("io.insert-koin:koin-android")
     implementation("io.insert-koin:koin-androidx-compose")
 }
 

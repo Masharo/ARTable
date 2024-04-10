@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
@@ -15,24 +16,72 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.masharo.artable.presentation.model.CalibrationUIState
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CalibrationScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    vm: CalibrationViewModel = koinViewModel()
 ) {
-    CalibrationPlay()
+    val uiState by vm.uiState.collectAsState()
+    CalibrationScreen(
+        modifier = modifier,
+        uiState = uiState,
+        navigateToCalibrationLeft = {
+            vm.navigateToCalculationState(CalibrationUIState.State.CALIBRATION_LEFT)
+        },
+        navigateToCalibrationRight = {
+            vm.navigateToCalculationState(CalibrationUIState.State.CALIBRATION_RIGHT)
+        },
+        navigateToCalibrationStart = {
+            vm.navigateToCalculationState(CalibrationUIState.State.START)
+        }
+    )
+}
+
+@Composable
+fun CalibrationScreen(
+    modifier: Modifier = Modifier,
+    uiState: CalibrationUIState,
+    navigateToCalibrationStart: () -> Unit,
+    navigateToCalibrationLeft: () -> Unit,
+    navigateToCalibrationRight: () -> Unit
+) {
+    when (uiState.state) {
+        CalibrationUIState.State.START              -> CalibrationPlay(
+            modifier = modifier,
+            onClickStart = navigateToCalibrationLeft
+        )
+        CalibrationUIState.State.CALIBRATION_LEFT   -> CalibrationStart(
+            modifier = modifier,
+            text = "Сдвиньте устройство максимально вправо",
+            onClickReady = navigateToCalibrationRight,
+            icon = Icons.Filled.ArrowForward
+        )
+        CalibrationUIState.State.CALIBRATION_RIGHT  -> CalibrationStart(
+            modifier = modifier,
+            text = "Сдвиньте устройство максимально влево",
+            onClickReady = navigateToCalibrationStart,
+            icon = Icons.Filled.ArrowBack
+        )
+    }
 }
 
 @Composable
 fun CalibrationPlay(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClickStart: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -40,9 +89,7 @@ fun CalibrationPlay(
         contentAlignment = Alignment.Center
     ) {
         Button(
-            onClick = {
-
-            },
+            onClick = onClickStart,
             shape = CircleShape
         ) {
             Text(
@@ -57,7 +104,10 @@ fun CalibrationPlay(
 
 @Composable
 fun CalibrationStart(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    text: String,
+    onClickReady: () -> Unit,
+    icon: ImageVector
 ) {
     Column(
         modifier = modifier
@@ -67,12 +117,12 @@ fun CalibrationStart(
         Icon(
             modifier = Modifier
                 .size(100.dp),
-            imageVector = Icons.Filled.ArrowForward,
+            imageVector = icon,
             contentDescription = null
         )
         Text(
             textAlign = TextAlign.Center,
-            text = "Сдвиньте устройство максимально вправо",
+            text = text,
             fontSize = 24.sp
         )
         Text(
@@ -84,9 +134,7 @@ fun CalibrationStart(
             modifier = Modifier
                 .size(100.dp),
             shape = CircleShape,
-            onClick = {
-
-            }
+            onClick = onClickReady
         ) {
             Icon(
                 modifier = Modifier
@@ -103,7 +151,12 @@ fun CalibrationStart(
 @Composable
 fun CalibrationScreenPreview() {
     ARTableTheme {
-        CalibrationScreen()
+        CalibrationScreen(
+            uiState = CalibrationUIState(0, 0),
+            navigateToCalibrationStart = {},
+            navigateToCalibrationLeft = {},
+            navigateToCalibrationRight = {}
+        )
     }
 }
 
@@ -111,6 +164,10 @@ fun CalibrationScreenPreview() {
 @Composable
 fun CalibrationRightPreview() {
     ARTableTheme {
-        CalibrationStart()
+        CalibrationStart(
+            text = "Сдвиньте устройство максимально вправо",
+            onClickReady = {},
+            icon = Icons.Filled.ArrowForward
+        )
     }
 }
