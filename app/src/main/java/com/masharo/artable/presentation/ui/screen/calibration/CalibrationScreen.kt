@@ -65,12 +65,14 @@ fun CalibrationScreen(
         )
         CalibrationUIState.State.CALIBRATION_LEFT   -> CalibrationStart(
             modifier = modifier,
+            position = uiState.position,
             text = "Сдвиньте устройство максимально вправо",
             onClickReady = navigateToCalibrationRight,
             icon = Icons.Filled.ArrowForward
         )
         CalibrationUIState.State.CALIBRATION_RIGHT  -> CalibrationStart(
             modifier = modifier,
+            position = uiState.position,
             text = "Сдвиньте устройство максимально влево",
             onClickReady = navigateToCalibrationStart,
             icon = Icons.Filled.ArrowBack
@@ -105,6 +107,7 @@ fun CalibrationPlay(
 @Composable
 fun CalibrationStart(
     modifier: Modifier = Modifier,
+    position: Long = 0L,
     text: String,
     onClickReady: () -> Unit,
     icon: ImageVector
@@ -126,7 +129,7 @@ fun CalibrationStart(
             fontSize = 24.sp
         )
         Text(
-            text = "Позиция: 34",
+            text = "Позиция: ${position}",
             fontSize = 17.sp
         )
         Spacer(modifier = Modifier.weight(1f))

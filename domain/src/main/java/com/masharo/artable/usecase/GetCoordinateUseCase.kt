@@ -7,12 +7,12 @@ class GetCoordinateUseCase(
     private val coordinateRepository: CoordinateRepository
 ) {
 
-    fun execute(): Flow<Result> {
+    suspend fun execute(): Flow<Result> {
         return coordinateRepository.getCoordinateStream()
     }
 
     data class Result(
-        val coordinate: Long
+        val position: Long
     )
 
 }

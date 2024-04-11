@@ -1,5 +1,7 @@
 package com.masharo.artable.di
 
+import com.masharo.artable.service.CoordinateService
+import com.masharo.artable.service.CoordinateServiceKtor
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.websocket.WebSockets
@@ -13,5 +15,10 @@ val dataModule = module {
                 pingInterval = 10
             }
         }
+    }
+    single<CoordinateService> {
+        CoordinateServiceKtor(
+            client = get()
+        )
     }
 }

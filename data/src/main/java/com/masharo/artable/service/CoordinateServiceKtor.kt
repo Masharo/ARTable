@@ -7,6 +7,7 @@ import io.ktor.client.plugins.websocket.webSocketSession
 import io.ktor.client.request.url
 import io.ktor.websocket.Frame
 import io.ktor.websocket.WebSocketSession
+import io.ktor.websocket.close
 import io.ktor.websocket.readText
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.consumeAsFlow
@@ -22,10 +23,10 @@ class CoordinateServiceKtor(
 
     private var session: WebSocketSession? = null
 
-    suspend fun getCoordinate(): Flow<Coordinate> {
+    override suspend fun getCoordinate(): Flow<Coordinate> {
         return flow {
             session = client.webSocketSession {
-                url("ws://192.168.0.12")
+                url("ws://0.0.0.0:8080/chat")
             }
             val coordinates = session!!
                 .incoming
@@ -34,6 +35,10 @@ class CoordinateServiceKtor(
                 .mapNotNull { Json.decodeFromString<Coordinate>(it.readText()) }
             emitAll(coordinates)
         }
+    }
+
+    suspend fun close() {
+        session?.close()
     }
 
 }
