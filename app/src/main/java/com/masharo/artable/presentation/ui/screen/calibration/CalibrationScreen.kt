@@ -39,6 +39,8 @@ fun CalibrationScreen(
         modifier = modifier,
         uiState = uiState,
         save = vm::save,
+        connect = vm::connect,
+        closeConnect = vm::closeConnect,
         saveLeftPosition = vm::saveLeftPosition,
         saveRightPosition = vm::saveRightPosition,
         navigateToCalibrationLeft = {
@@ -58,6 +60,8 @@ fun CalibrationScreen(
     modifier: Modifier = Modifier,
     uiState: CalibrationUIState,
     save: () -> Unit,
+    connect: () -> Unit,
+    closeConnect: () -> Unit,
     saveLeftPosition: () -> Unit,
     saveRightPosition: () -> Unit,
     navigateToCalibrationStart: () -> Unit,
@@ -67,7 +71,10 @@ fun CalibrationScreen(
     when (uiState.state) {
         CalibrationUIState.State.START              -> CalibrationPlay(
             modifier = modifier,
-            onClickStart = navigateToCalibrationLeft
+            onClickStart = {
+                connect()
+                navigateToCalibrationLeft()
+            }
         )
         CalibrationUIState.State.CALIBRATION_LEFT   -> CalibrationStart(
             modifier = modifier,
@@ -84,8 +91,9 @@ fun CalibrationScreen(
             position = uiState.position,
             text = "Сдвиньте устройство максимально влево",
             onClickReady = {
-                saveLeftPosition()
+                saveRightPosition()
                 save()
+                closeConnect()
                 navigateToCalibrationStart()
             },
             icon = Icons.Filled.ArrowBack
@@ -170,6 +178,8 @@ fun CalibrationScreenPreview() {
         CalibrationScreen(
             uiState = CalibrationUIState(0, 0),
             save = {},
+            connect = {},
+            closeConnect = {},
             saveRightPosition = {},
             saveLeftPosition = {},
             navigateToCalibrationStart = {},

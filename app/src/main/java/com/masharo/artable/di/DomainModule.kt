@@ -21,4 +21,6 @@ val domainModule = module {
 
     factoryOf(::GetSavedCoordinateUseCase)
 
+    factoryOf(::CloseConnectCoordinateUseCase)
+
 }

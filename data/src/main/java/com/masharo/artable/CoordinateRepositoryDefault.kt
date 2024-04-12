@@ -35,4 +35,8 @@ class CoordinateRepositoryDefault(
         }
     }
 
+    override suspend fun closeConnect() {
+        coordinateService.close()
+    }
+
 }

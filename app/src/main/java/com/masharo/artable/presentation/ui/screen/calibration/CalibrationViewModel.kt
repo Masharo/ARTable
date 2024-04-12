@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masharo.artable.presentation.model.CalibrationUIState
 import com.masharo.artable.presentation.model.toSaveCoordinateUseCase
+import com.masharo.artable.usecase.CloseConnectCoordinateUseCase
 import com.masharo.artable.usecase.GetCoordinateUseCase
 import com.masharo.artable.usecase.SaveCoordinateUseCase
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class CalibrationViewModel(
     private val getCoordinateUseCase: GetCoordinateUseCase,
-    private val saveCoordinateUseCase: SaveCoordinateUseCase
+    private val saveCoordinateUseCase: SaveCoordinateUseCase,
+    private val closeConnectCoordinateUseCase: CloseConnectCoordinateUseCase
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -27,7 +29,7 @@ class CalibrationViewModel(
     )
     val uiState = _uiState.asStateFlow()
 
-    init {
+    fun connect() {
         viewModelScope.launch(Dispatchers.IO) {
             getCoordinateUseCase.execute()
                 .map { it.position }
@@ -36,6 +38,12 @@ class CalibrationViewModel(
                         position = it
                     )
                 }
+        }
+    }
+
+    fun closeConnect() {
+        viewModelScope.launch(Dispatchers.IO) {
+            closeConnectCoordinateUseCase.execute()
         }
     }
 

@@ -37,7 +37,7 @@ class CoordinateServiceKtor(
         }
     }
 
-    suspend fun close() {
+    override suspend fun close() {
         session?.close()
     }
 

@@ -12,7 +12,7 @@ fun ARTableScreen(
 ) {
     Scaffold { paddingValues ->
         CalibrationScreen(
-            modifier = Modifier
+            modifier = modifier
                 .padding(paddingValues)
         )
     }
