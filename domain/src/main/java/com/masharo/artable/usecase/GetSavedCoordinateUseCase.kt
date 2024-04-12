@@ -3,16 +3,17 @@ package com.masharo.artable.usecase
 import com.masharo.artable.repository.CoordinateRepository
 import kotlinx.coroutines.flow.Flow
 
-class GetCoordinateUseCase(
+class GetSavedCoordinateUseCase(
     private val coordinateRepository: CoordinateRepository
 ) {
 
-    fun execute(): Flow<Result> {
-        return coordinateRepository.getCoordinateStream()
+    fun execute(): Flow<Result?> {
+        return coordinateRepository.getSavedCoordinate()
     }
 
     data class Result(
-        val position: Long
+        val positionLeft: Long,
+        val positionRight: Long
     )
 
 }

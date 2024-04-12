@@ -23,10 +23,10 @@ class CoordinateServiceKtor(
 
     private var session: WebSocketSession? = null
 
-    override suspend fun getCoordinate(): Flow<Coordinate> {
+    override fun getCoordinate(): Flow<Coordinate> {
         return flow {
             session = client.webSocketSession {
-                url("ws://0.0.0.0:8080/chat")
+                url("ws://10.1.64.50:8080/chat")
             }
             val coordinates = session!!
                 .incoming

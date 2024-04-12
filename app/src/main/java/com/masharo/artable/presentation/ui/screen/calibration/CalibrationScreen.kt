@@ -38,6 +38,9 @@ fun CalibrationScreen(
     CalibrationScreen(
         modifier = modifier,
         uiState = uiState,
+        save = vm::save,
+        saveLeftPosition = vm::saveLeftPosition,
+        saveRightPosition = vm::saveRightPosition,
         navigateToCalibrationLeft = {
             vm.navigateToCalculationState(CalibrationUIState.State.CALIBRATION_LEFT)
         },
@@ -54,6 +57,9 @@ fun CalibrationScreen(
 fun CalibrationScreen(
     modifier: Modifier = Modifier,
     uiState: CalibrationUIState,
+    save: () -> Unit,
+    saveLeftPosition: () -> Unit,
+    saveRightPosition: () -> Unit,
     navigateToCalibrationStart: () -> Unit,
     navigateToCalibrationLeft: () -> Unit,
     navigateToCalibrationRight: () -> Unit
@@ -67,14 +73,21 @@ fun CalibrationScreen(
             modifier = modifier,
             position = uiState.position,
             text = "Сдвиньте устройство максимально вправо",
-            onClickReady = navigateToCalibrationRight,
+            onClickReady = {
+                saveLeftPosition()
+                navigateToCalibrationRight()
+            },
             icon = Icons.Filled.ArrowForward
         )
         CalibrationUIState.State.CALIBRATION_RIGHT  -> CalibrationStart(
             modifier = modifier,
             position = uiState.position,
             text = "Сдвиньте устройство максимально влево",
-            onClickReady = navigateToCalibrationStart,
+            onClickReady = {
+                saveLeftPosition()
+                save()
+                navigateToCalibrationStart()
+            },
             icon = Icons.Filled.ArrowBack
         )
     }
@@ -156,6 +169,9 @@ fun CalibrationScreenPreview() {
     ARTableTheme {
         CalibrationScreen(
             uiState = CalibrationUIState(0, 0),
+            save = {},
+            saveRightPosition = {},
+            saveLeftPosition = {},
             navigateToCalibrationStart = {},
             navigateToCalibrationLeft = {},
             navigateToCalibrationRight = {}
