@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">ARTable</string>
+
+    <string name="settings_ip_not_found">Не указан</string>
+    <string name="settings_value_not_found">Отсутствует</string>
+    <string name="settings_calibrate_title">Калибровка</string>
+    <string name="settings_calibrate_left_value_name">Левый край</string>
+    <string name="settings_calibrate_right_value_name">Правый край</string>
+    <string name="settings_manual_calibrate">Ручная калибровка</string>
+    <string name="settings_automatic_calibrate">Автоматическая</string>
+    <string name="settings_ip_title">IP</string>
+    <string name="settings_button_change_ip">Изменить</string>
 </resources>
