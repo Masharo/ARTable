@@ -11,4 +11,5 @@ val DefaultDarkPalette = ARTableColors(
     onSecondBackground = Color(0xFF000000),
     thirdBackgroundColor = Color(0xFFBDAC10),
     onThirdBackgroundColor = Color(0xFFFFFFFF),
+    onSecondBackgroundAdditionally = Color(0xFF3F3F3F)
 )

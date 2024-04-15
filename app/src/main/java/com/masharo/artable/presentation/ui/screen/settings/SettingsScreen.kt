@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,6 +49,11 @@ fun SettingsScreen(
         SettingsChangeIPDialog(
             modifier = modifier,
             closeDialog = {
+                vm.updateIsChangeIP(false)
+            },
+            updateIP = {
+                vm.updateIP(it)
+                vm.saveIP(it)
                 vm.updateIsChangeIP(false)
             }
         )
@@ -102,9 +109,89 @@ fun SettingsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun SettingsManualCalibrateChangeModal(
+    modifier: Modifier = Modifier,
+    closeDialog: () -> Unit,
+    save: (Long, Long) -> Unit
+) {
+    val leftValue by rememberSaveable {
+        mutableStateOf("")
+    }
+    val rightValue by rememberSaveable {
+        mutableStateOf("")
+    }
+    AlertDialog(
+        modifier = modifier,
+        onDismissRequest = closeDialog
+    ) {
+        SettingsCard(
+            modifier = modifier
+        ) {
+            SettingsCardHeader(
+                title = stringResource(R.string.settings_calibrate_title)
+            )
+            SettingsModalOutlinedTextField(
+                value = leftValue,
+                onValueChange = {},
+                keyboardType = KeyboardType.Number,
+                placeholder = "Левый край"
+            )
+            SettingsModalOutlinedTextField(
+                value = rightValue,
+                onValueChange = {},
+                keyboardType = KeyboardType.Number,
+                placeholder = "Правый край"
+            )
+            SettingsButtonCard(
+                modifier = Modifier
+                    .padding(
+                        bottom = 15.dp
+                    ),
+                onClick = {},
+                text = "Сохранить"
+            )
+        }
+    }
+}
+
+@Composable
+fun SettingsModalOutlinedTextField(
+    modifier: Modifier = Modifier,
+    value: String,
+    placeholder: String = "",
+    keyboardType: KeyboardType = KeyboardType.Text,
+    onValueChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        modifier = modifier,
+        value = value,
+        placeholder = {
+            Text(
+                text = placeholder,
+                style = ARTableThemeState.typography.middleText,
+                color = ARTableThemeState.colors.onSecondBackgroundAdditionally
+            )
+        },
+        textStyle = ARTableThemeState.typography.middleText,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = ARTableThemeState.colors.onSecondBackground,
+            disabledBorderColor = ARTableThemeState.colors.onSecondBackgroundAdditionally,
+            disabledTextColor = ARTableThemeState.colors.onSecondBackground,
+            focusedTextColor = ARTableThemeState.colors.onSecondBackground
+        ),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyboardType
+        ),
+        onValueChange = onValueChange
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun SettingsChangeIPDialog(
     modifier: Modifier = Modifier,
-    closeDialog: () -> Unit
+    closeDialog: () -> Unit,
+    updateIP: (String) -> Unit
 ) {
     var currentIP by rememberSaveable {
         mutableStateOf("")
@@ -119,24 +206,21 @@ fun SettingsChangeIPDialog(
             SettingsCardHeader(
                 title = stringResource(R.string.settings_ip_title)
             )
-            OutlinedTextField(
+            SettingsModalOutlinedTextField(
                 value = currentIP,
-                textStyle = ARTableThemeState.typography.middleText,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = ARTableThemeState.colors.onSecondBackground,
-                    disabledTextColor = ARTableThemeState.colors.onSecondBackground,
-                    focusedTextColor = ARTableThemeState.colors.onSecondBackground
-                ),
                 onValueChange = {
                     currentIP = it
-                }
+                },
+                placeholder = "IP адрес"
             )
             SettingsButtonCard(
                 modifier = Modifier
                     .padding(
                         bottom = 15.dp
                     ),
-                onClick = {},
+                onClick = {
+                    updateIP(currentIP)
+                },
                 text = "Сохранить"
             )
         }
@@ -238,7 +322,7 @@ fun SettingsCalibrationState(
 @Composable
 fun SettingsIPCard(
     modifier: Modifier = Modifier,
-    ip: String?,
+    ip: String,
     onClickChangeIp: () -> Unit
 ) {
     SettingsCard(
@@ -252,7 +336,7 @@ fun SettingsIPCard(
                 .padding(
                     vertical = 20.dp
                 ),
-            text = ip ?: stringResource(R.string.settings_ip_not_found),
+            text = ip.ifEmpty { stringResource(R.string.settings_ip_not_found) },
             color = ARTableThemeState.colors.onSecondBackground,
             style = ARTableThemeState.typography.bigText
         )
@@ -360,7 +444,19 @@ fun SettingsScreenPreview() {
 fun SettingsChangeIPDialogPreview() {
     ARTableTheme {
         SettingsChangeIPDialog(
-            closeDialog = {}
+            closeDialog = {},
+            updateIP = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+fun SettingsManualCalibrateChangeModalPreview() {
+    ARTableTheme {
+        SettingsManualCalibrateChangeModal(
+            closeDialog = {},
+            save = {_, _ -> }
         )
     }
 }

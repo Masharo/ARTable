@@ -1,14 +1,20 @@
 package com.masharo.artable.di
 
+import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.masharo.artable.database.ARTableDatabase
+import com.masharo.artable.database.dao.IPDao
 import com.masharo.artable.service.CoordinateService
 import com.masharo.artable.service.CoordinateServiceKtor
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.websocket.WebSockets
 import io.ktor.http.hostIsIp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.dsl.module
 
 val dataModule = module {
@@ -18,7 +24,21 @@ val dataModule = module {
             context = get(),
             klass = ARTableDatabase::class.java,
             name = ARTableDatabase.AR_TABLE_DATABASE_NAME
-        ).build()
+        )
+            .addCallback(object : RoomDatabase.Callback() {
+                override fun onCreate(db: SupportSQLiteDatabase) {
+                    super.onCreate(db)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val sqlQuery = get<Context>()
+                            .assets
+                            .open("IP.sql")
+                            .bufferedReader()
+                            .use { it.readText() }
+                        db.execSQL(sqlQuery)
+                    }
+                }
+            })
+            .build()
     }
 
     single {
@@ -37,6 +57,10 @@ val dataModule = module {
         CoordinateServiceKtor(
             client = get()
         )
+    }
+
+    single<IPDao> {
+        get<ARTableDatabase>().ipDao()
     }
 
 }

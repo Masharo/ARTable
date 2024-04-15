@@ -10,6 +10,7 @@ data class ARTableColors(
     val onBackgroundColor: Color,
     val secondBackground: Color,
     val onSecondBackground: Color,
+    val onSecondBackgroundAdditionally: Color,
     val thirdBackgroundColor: Color,
     val onThirdBackgroundColor: Color,
 )

@@ -1,10 +1,9 @@
-package com.masharo.artable
+package com.masharo.artable.repository
 
 import com.masharo.artable.database.dao.CalibrationDao
 import com.masharo.artable.database.entity.toCalibrationEntity
 import com.masharo.artable.database.entity.toGetSavedCoordinateUseCase
 import com.masharo.artable.model.toGetCoordinateUseCase
-import com.masharo.artable.repository.CoordinateRepository
 import com.masharo.artable.service.CoordinateService
 import com.masharo.artable.usecase.GetCoordinateUseCase
 import com.masharo.artable.usecase.GetSavedCoordinateUseCase
