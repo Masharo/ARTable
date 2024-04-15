@@ -13,10 +13,10 @@ data class CalibrationEntity(
     val calibrationId: Long = 0,
 
     @ColumnInfo(name = "position_left")
-    val positionLeft: Long,
+    val positionLeft: Long?,
 
     @ColumnInfo(name = "position_right")
-    val positionRight: Long
+    val positionRight: Long?
 )
 
 fun SaveCoordinateUseCase.Param.toCalibrationEntity() = CalibrationEntity(

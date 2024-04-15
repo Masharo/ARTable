@@ -59,13 +59,27 @@ fun SettingsScreen(
         )
     }
 
+    if (uiState.isChangeCalibration) {
+        SettingsManualCalibrateChangeDialog(
+            closeDialog = {
+                vm.updateIsChangeCalibration(false)
+            },
+            save = { leftValue, rightValue ->
+                vm.saveCalibrate(leftValue, rightValue)
+                vm.updateIsChangeCalibration(false)
+            }
+        )
+    }
+
     SettingsScreen(
         modifier = modifier,
         uiState = uiState,
         onClickChangeIp = {
             vm.updateIsChangeIP(true)
         },
-        onClickManualCalibrate = {},
+        onClickManualCalibrate = {
+            vm.updateIsChangeCalibration(true)
+        },
         onClickAutomaticCalibrate = {}
     )
 }
@@ -109,15 +123,15 @@ fun SettingsScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsManualCalibrateChangeModal(
+fun SettingsManualCalibrateChangeDialog(
     modifier: Modifier = Modifier,
     closeDialog: () -> Unit,
-    save: (Long, Long) -> Unit
+    save: (String, String) -> Unit
 ) {
-    val leftValue by rememberSaveable {
+    var leftValue by rememberSaveable {
         mutableStateOf("")
     }
-    val rightValue by rememberSaveable {
+    var rightValue by rememberSaveable {
         mutableStateOf("")
     }
     AlertDialog(
@@ -132,22 +146,28 @@ fun SettingsManualCalibrateChangeModal(
             )
             SettingsModalOutlinedTextField(
                 value = leftValue,
-                onValueChange = {},
+                onValueChange = {
+                    leftValue = it
+                },
                 keyboardType = KeyboardType.Number,
-                placeholder = "Левый край"
+                label = "Левый край"
             )
             SettingsModalOutlinedTextField(
                 value = rightValue,
-                onValueChange = {},
+                onValueChange = {
+                    rightValue = it
+                },
                 keyboardType = KeyboardType.Number,
-                placeholder = "Правый край"
+                label = "Правый край"
             )
             SettingsButtonCard(
                 modifier = Modifier
                     .padding(
                         bottom = 15.dp
                     ),
-                onClick = {},
+                onClick = {
+                    save(leftValue, rightValue)
+                },
                 text = "Сохранить"
             )
         }
@@ -158,16 +178,16 @@ fun SettingsManualCalibrateChangeModal(
 fun SettingsModalOutlinedTextField(
     modifier: Modifier = Modifier,
     value: String,
-    placeholder: String = "",
+    label: String = "",
     keyboardType: KeyboardType = KeyboardType.Text,
     onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
         modifier = modifier,
         value = value,
-        placeholder = {
+        label = {
             Text(
-                text = placeholder,
+                text = label,
                 style = ARTableThemeState.typography.middleText,
                 color = ARTableThemeState.colors.onSecondBackgroundAdditionally
             )
@@ -211,7 +231,7 @@ fun SettingsChangeIPDialog(
                 onValueChange = {
                     currentIP = it
                 },
-                placeholder = "IP адрес"
+                label = "IP адрес"
             )
             SettingsButtonCard(
                 modifier = Modifier
@@ -454,7 +474,7 @@ fun SettingsChangeIPDialogPreview() {
 @Composable
 fun SettingsManualCalibrateChangeModalPreview() {
     ARTableTheme {
-        SettingsManualCalibrateChangeModal(
+        SettingsManualCalibrateChangeDialog(
             closeDialog = {},
             save = {_, _ -> }
         )

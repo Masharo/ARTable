@@ -11,7 +11,7 @@ interface CoordinateRepository {
 
     suspend fun saveCoordinate(param: SaveCoordinateUseCase.Param)
 
-    fun getSavedCoordinate(): Flow<GetSavedCoordinateUseCase.Result?>
+    fun getSavedCoordinate(): GetSavedCoordinateUseCase.Result?
 
     suspend fun closeConnect()
 

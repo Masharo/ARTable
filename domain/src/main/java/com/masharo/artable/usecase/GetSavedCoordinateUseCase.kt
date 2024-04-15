@@ -7,13 +7,13 @@ class GetSavedCoordinateUseCase(
     private val coordinateRepository: CoordinateRepository
 ) {
 
-    fun execute(): Flow<Result?> {
+    fun execute(): Result? {
         return coordinateRepository.getSavedCoordinate()
     }
 
     data class Result(
-        val positionLeft: Long,
-        val positionRight: Long
+        val positionLeft: Long?,
+        val positionRight: Long?
     )
 
 }

@@ -27,6 +27,6 @@ abstract class CalibrationDao {
         FROM calibration
         LIMIT 1
     """)
-    abstract fun get(): Flow<List<CalibrationEntity>>
+    abstract fun get(): List<CalibrationEntity>
 
 }

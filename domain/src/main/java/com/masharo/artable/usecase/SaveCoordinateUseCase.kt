@@ -11,8 +11,8 @@ class SaveCoordinateUseCase(
     }
 
     data class Param(
-        val positionLeft: Long,
-        val positionRight: Long
+        val positionLeft: Long?,
+        val positionRight: Long?
     )
 
 }

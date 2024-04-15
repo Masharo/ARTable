@@ -28,10 +28,8 @@ class CoordinateRepositoryDefault(
         )
     }
 
-    override fun getSavedCoordinate(): Flow<GetSavedCoordinateUseCase.Result?> {
-        return coordinateDao.get().map {
-            it.firstOrNull()?.toGetSavedCoordinateUseCase()
-        }
+    override fun getSavedCoordinate(): GetSavedCoordinateUseCase.Result? {
+        return coordinateDao.get().firstOrNull()?.toGetSavedCoordinateUseCase()
     }
 
     override suspend fun closeConnect() {
