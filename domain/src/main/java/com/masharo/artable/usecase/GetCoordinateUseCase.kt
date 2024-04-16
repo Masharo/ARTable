@@ -8,7 +8,12 @@ class GetCoordinateUseCase(
 ) {
 
     fun execute(): Flow<Result> {
-        return coordinateRepository.getCoordinateStream()
+        try {
+            return coordinateRepository.getCoordinateStream()
+        } catch (ex: Exception) {
+            println("МОЯ ОШИБКА")
+            throw Exception("ERROR")
+        }
     }
 
     data class Result(

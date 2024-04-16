@@ -1,5 +1,6 @@
 package com.masharo.artable.presentation.ui.screen.calibration
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,8 +13,10 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -27,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.masharo.artable.presentation.model.CalibrationUIState
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
+import com.masharo.artable.presentation.ui.theme.ARTableThemeState
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -108,18 +112,25 @@ fun CalibrationPlay(
 ) {
     Box(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(
+                color = ARTableThemeState.colors.background
+            ),
         contentAlignment = Alignment.Center
     ) {
         Button(
             onClick = onClickStart,
-            shape = CircleShape
+            shape = CircleShape,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ARTableThemeState.colors.thirdBackgroundColor,
+                contentColor = ARTableThemeState.colors.onThirdBackgroundColor
+            )
         ) {
             Text(
                 modifier = Modifier
                     .padding(8.dp),
                 text = "Начать калибровку",
-                fontSize = 24.sp
+                style = ARTableThemeState.typography.bigText
             )
         }
     }
@@ -135,30 +146,40 @@ fun CalibrationStart(
 ) {
     Column(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(
+                color = ARTableThemeState.colors.background
+            ),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
             modifier = Modifier
                 .size(100.dp),
             imageVector = icon,
-            contentDescription = null
+            contentDescription = null,
+            tint = ARTableThemeState.colors.onBackgroundColor
         )
         Text(
             textAlign = TextAlign.Center,
             text = text,
-            fontSize = 24.sp
+            style = ARTableThemeState.typography.bigText,
+            color = ARTableThemeState.colors.onBackgroundColor
         )
         Text(
             text = "Позиция: ${position}",
-            fontSize = 17.sp
+            style = ARTableThemeState.typography.middleText,
+            color = ARTableThemeState.colors.onBackgroundColor
         )
         Spacer(modifier = Modifier.weight(1f))
         FilledIconButton(
             modifier = Modifier
                 .size(100.dp),
             shape = CircleShape,
-            onClick = onClickReady
+            onClick = onClickReady,
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = ARTableThemeState.colors.thirdBackgroundColor,
+                contentColor = ARTableThemeState.colors.onThirdBackgroundColor
+            )
         ) {
             Icon(
                 modifier = Modifier

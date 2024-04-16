@@ -3,6 +3,8 @@ package com.masharo.artable.repository
 import com.masharo.artable.database.dao.CalibrationDao
 import com.masharo.artable.database.entity.toCalibrationEntity
 import com.masharo.artable.database.entity.toGetSavedCoordinateUseCase
+import com.masharo.artable.model.Error
+import com.masharo.artable.model.Success
 import com.masharo.artable.model.toGetCoordinateUseCase
 import com.masharo.artable.service.CoordinateService
 import com.masharo.artable.usecase.GetCoordinateUseCase
@@ -17,9 +19,16 @@ class CoordinateRepositoryDefault(
 ) : CoordinateRepository {
 
     override fun getCoordinateStream(): Flow<GetCoordinateUseCase.Result> {
-        return coordinateService.getCoordinate().map { coordinate ->
-            coordinate.toGetCoordinateUseCase()
+        val result = coordinateService.getCoordinate()
+        return when (result) {
+            is Success -> result.coordinate.map { coordinate ->
+                coordinate.toGetCoordinateUseCase()
+            }
+            is Error -> throw Exception("Твоя ошибка")
         }
+//        return coordinateService.getCoordinate().map { coordinate ->
+//            coordinate.toGetCoordinateUseCase()
+//        }
     }
 
     override suspend fun saveCoordinate(param: SaveCoordinateUseCase.Param) {

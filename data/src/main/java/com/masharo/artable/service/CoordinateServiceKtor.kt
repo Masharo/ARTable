@@ -1,6 +1,9 @@
 package com.masharo.artable.service
 
 import com.masharo.artable.model.Coordinate
+import com.masharo.artable.model.CoordinateResponse
+import com.masharo.artable.model.Error
+import com.masharo.artable.model.Success
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
 import io.ktor.client.plugins.websocket.webSocketSession
@@ -14,6 +17,8 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.isActive
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.serialization.json.Json
 
@@ -23,17 +28,23 @@ class CoordinateServiceKtor(
 
     private var session: WebSocketSession? = null
 
-    override fun getCoordinate(): Flow<Coordinate> {
-        return flow {
-            session = client.webSocketSession {
-                url("ws://192.168.0.179:8080/chat")
-            }
-            val coordinates = session!!
-                .incoming
-                .consumeAsFlow()
-                .filterIsInstance<Frame.Text>()
-                .mapNotNull { Json.decodeFromString<Coordinate>(it.readText()) }
-            emitAll(coordinates)
+    override fun getCoordinate(): CoordinateResponse {
+        return try {
+            Success(
+                coordinate = flow {
+                    session = client.webSocketSession {
+                        url("ws://192.168.0.179:8080/chat")
+                    }
+                    val coordinates = session!!
+                        .incoming
+                        .consumeAsFlow()
+                        .filterIsInstance<Frame.Text>()
+                        .mapNotNull { Json.decodeFromString<Coordinate>(it.readText()) }
+                    emitAll(coordinates)
+                }
+            )
+        } catch(ex: Exception) {
+            Error
         }
     }
 

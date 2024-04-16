@@ -41,7 +41,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun SettingsScreen(
     modifier: Modifier = Modifier,
-    vm: SettingsViewModel = koinViewModel()
+    vm: SettingsViewModel = koinViewModel(),
+    navigateToCalibration: () -> Unit
 ) {
     val uiState by vm.uiState.collectAsState()
 
@@ -80,7 +81,7 @@ fun SettingsScreen(
         onClickManualCalibrate = {
             vm.updateIsChangeCalibration(true)
         },
-        onClickAutomaticCalibrate = {}
+        onClickAutomaticCalibrate = navigateToCalibration
     )
 }
 
