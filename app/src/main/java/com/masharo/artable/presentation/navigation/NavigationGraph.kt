@@ -1,5 +1,6 @@
 package com.masharo.artable.presentation.navigation
 
+import androidx.compose.runtime.MutableState
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -8,7 +9,8 @@ import com.masharo.artable.presentation.ui.screen.demonstration.DemonstrationScr
 import com.masharo.artable.presentation.ui.screen.settings.SettingsScreen
 
 fun NavGraphBuilder.navigationGraphARTable(
-    navController: NavController
+    navController: NavController,
+    isVisibleBottomBar: MutableState<Boolean>
 ) {
     navigateToSettings(
         navigateToCalibration = {
@@ -16,7 +18,9 @@ fun NavGraphBuilder.navigationGraphARTable(
         }
     )
     navigateToCalibrate()
-    navigateToDemonstration()
+    navigateToDemonstration(
+        isVisibleBottomBar = isVisibleBottomBar
+    )
 }
 
 fun NavGraphBuilder.navigateToSettings(
@@ -35,8 +39,12 @@ fun NavGraphBuilder.navigateToCalibrate() {
     }
 }
 
-fun NavGraphBuilder.navigateToDemonstration() {
+fun NavGraphBuilder.navigateToDemonstration(
+    isVisibleBottomBar: MutableState<Boolean>
+) {
     composable(route = Demonstration.route) {
-        DemonstrationScreen()
+        DemonstrationScreen(
+            isVisibleBottomBar = isVisibleBottomBar
+        )
     }
 }

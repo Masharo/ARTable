@@ -3,8 +3,9 @@ package com.masharo.artable.presentation.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val DefaultDarkPalette = ARTableColors(
-    navigationBackgroundColor = Color(0xFF3C3333),
+    navigationBackgroundColor = Color(0xFF1B1B1B),
     onNavigationBackgroundColor = Color(0xFFFFFFFF),
+    onNavigationBackgroundAdditionallyColor = Color(0xFFBDAC10),
     background = Color(0xFF000000),
     onBackgroundColor = Color(0xFFFFFFFF),
     secondBackground = Color(0xFFCEC259),

@@ -18,8 +18,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -32,12 +35,14 @@ import com.masharo.artable.R
 import com.masharo.artable.presentation.model.DemonstrationUIState
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
 import com.masharo.artable.presentation.ui.theme.ARTableThemeState
+import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun DemonstrationScreen(
     modifier: Modifier = Modifier,
-    vm: DemonstrationViewModel = koinViewModel()
+    vm: DemonstrationViewModel = koinViewModel(),
+    isVisibleBottomBar: MutableState<Boolean>
 ) {
     val uiState by vm.uiState.collectAsState()
 
@@ -49,7 +54,10 @@ fun DemonstrationScreen(
         },
         navigateToPrePlay = {
             vm.updateState(DemonstrationUIState.State.PRE_PLAY)
+            isVisibleBottomBar.value = true
         },
+        isVisibleBottomBar = isVisibleBottomBar,
+        scrollCoefficient = uiState.scrollCoefficient,
         position = uiState.position
     )
 }
@@ -59,19 +67,28 @@ fun DemonstrationScreen(
     modifier: Modifier = Modifier,
     state: DemonstrationUIState.State,
     position: Long,
+    isVisibleBottomBar: MutableState<Boolean>,
+    scrollCoefficient: Int,
     navigateToPlay: () -> Unit,
     navigateToPrePlay: () -> Unit
 ) {
     when (state) {
-        DemonstrationUIState.State.PRE_PLAY -> DemonstrationPrePlay(
-            modifier = modifier,
-            navigateToPlay = navigateToPlay
-        )
-        DemonstrationUIState.State.PLAY -> DemonstrationPlay(
-            modifier = modifier,
-            navigateToPrePlay = navigateToPrePlay,
-            position = position
-        )
+        DemonstrationUIState.State.PRE_PLAY -> {
+            isVisibleBottomBar.value = true
+            DemonstrationPrePlay(
+                modifier = modifier,
+                navigateToPlay = navigateToPlay
+            )
+        }
+        DemonstrationUIState.State.PLAY -> {
+            isVisibleBottomBar.value = false
+            DemonstrationPlay(
+                modifier = modifier,
+                navigateToPrePlay = navigateToPrePlay,
+                scrollCoefficient = scrollCoefficient,
+                position = position
+            )
+        }
     }
 }
 
@@ -111,11 +128,12 @@ fun DemonstrationPrePlay(
 fun DemonstrationPlay(
     modifier: Modifier = Modifier,
     navigateToPrePlay: () -> Unit,
+    scrollCoefficient: Int,
     position: Long
 ) {
     val scrollState = rememberScrollState()
     LaunchedEffect(key1 = position) {
-        scrollState.scrollTo(position.toInt() * scrollState.maxValue / 10000 )
+        scrollState.scrollTo(position.toInt() * scrollState.maxValue / scrollCoefficient )
     }
     val windowController = (LocalView.current.context as Activity)
         .window
@@ -147,7 +165,11 @@ fun DemonstrationPlay(
 @Composable
 fun DemonstrationScreenPreview() {
     ARTableTheme {
-        DemonstrationScreen()
+        DemonstrationScreen(
+            isVisibleBottomBar = remember {
+                mutableStateOf(false)
+            }
+        )
     }
 }
 
@@ -157,7 +179,8 @@ fun DemonstrationStartPreview() {
     ARTableTheme {
         DemonstrationPlay(
             position = 0,
-            navigateToPrePlay = {}
+            navigateToPrePlay = {},
+            scrollCoefficient = 1
         )
     }
 }

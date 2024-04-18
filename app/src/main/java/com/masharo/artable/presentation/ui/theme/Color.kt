@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 data class ARTableColors(
     val navigationBackgroundColor: Color,
     val onNavigationBackgroundColor: Color,
+    val onNavigationBackgroundAdditionallyColor: Color,
     val background: Color,
     val onBackgroundColor: Color,
     val secondBackground: Color,
