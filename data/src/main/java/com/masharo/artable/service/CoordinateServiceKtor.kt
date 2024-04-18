@@ -28,23 +28,17 @@ class CoordinateServiceKtor(
 
     private var session: WebSocketSession? = null
 
-    override fun getCoordinate(): CoordinateResponse {
-        return try {
-            Success(
-                coordinate = flow {
-                    session = client.webSocketSession {
-                        url("ws://192.168.0.179:8080/chat")
-                    }
-                    val coordinates = session!!
-                        .incoming
-                        .consumeAsFlow()
-                        .filterIsInstance<Frame.Text>()
-                        .mapNotNull { Json.decodeFromString<Coordinate>(it.readText()) }
-                    emitAll(coordinates)
-                }
-            )
-        } catch(ex: Exception) {
-            Error
+    override fun getCoordinate(ip: String): Flow<Coordinate> {
+        return flow {
+            session = client.webSocketSession {
+                url("ws://${ip}:8080/chat")
+            }
+            val coordinates = session!!
+                .incoming
+                .consumeAsFlow()
+                .filterIsInstance<Frame.Text>()
+                .mapNotNull { Json.decodeFromString<Coordinate>(it.readText()) }
+            emitAll(coordinates)
         }
     }
 

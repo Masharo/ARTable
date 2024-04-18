@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.masharo.artable.presentation.ui.screen.calibration.CalibrationScreen
+import com.masharo.artable.presentation.ui.screen.demonstration.DemonstrationScreen
 import com.masharo.artable.presentation.ui.screen.settings.SettingsScreen
 
 fun NavGraphBuilder.navigationGraphARTable(
@@ -15,6 +16,7 @@ fun NavGraphBuilder.navigationGraphARTable(
         }
     )
     navigateToCalibrate()
+    navigateToDemonstration()
 }
 
 fun NavGraphBuilder.navigateToSettings(
@@ -30,5 +32,11 @@ fun NavGraphBuilder.navigateToSettings(
 fun NavGraphBuilder.navigateToCalibrate() {
     composable(route = Calibration.route) {
         CalibrationScreen()
+    }
+}
+
+fun NavGraphBuilder.navigateToDemonstration() {
+    composable(route = Demonstration.route) {
+        DemonstrationScreen()
     }
 }

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CoordinateService {
 
-    fun getCoordinate(): CoordinateResponse
+    fun getCoordinate(ip: String): Flow<Coordinate>
 
     suspend fun close()
 

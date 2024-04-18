@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface CoordinateRepository {
 
-    fun getCoordinateStream(): Flow<GetCoordinateUseCase.Result>
+    fun getCoordinateStream(ip: String): Flow<GetCoordinateUseCase.Result>
 
     suspend fun saveCoordinate(param: SaveCoordinateUseCase.Param)
 

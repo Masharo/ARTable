@@ -18,17 +18,10 @@ class CoordinateRepositoryDefault(
     private val coordinateDao: CalibrationDao
 ) : CoordinateRepository {
 
-    override fun getCoordinateStream(): Flow<GetCoordinateUseCase.Result> {
-        val result = coordinateService.getCoordinate()
-        return when (result) {
-            is Success -> result.coordinate.map { coordinate ->
-                coordinate.toGetCoordinateUseCase()
-            }
-            is Error -> throw Exception("Твоя ошибка")
+    override fun getCoordinateStream(ip: String): Flow<GetCoordinateUseCase.Result> {
+        return coordinateService.getCoordinate(ip).map { coordinate ->
+            coordinate.toGetCoordinateUseCase()
         }
-//        return coordinateService.getCoordinate().map { coordinate ->
-//            coordinate.toGetCoordinateUseCase()
-//        }
     }
 
     override suspend fun saveCoordinate(param: SaveCoordinateUseCase.Param) {
