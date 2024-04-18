@@ -115,16 +115,16 @@ fun DemonstrationPlay(
 ) {
     val scrollState = rememberScrollState()
     LaunchedEffect(key1 = position) {
-        scrollState.scrollTo(position.toInt() * scrollState.maxValue / 10000 )
+        scrollState.scrollTo(position.toInt() * scrollState.maxValue / 1000 )
     }
-    val windowController = (LocalView.current.context as Activity)
-        .window
-        .decorView
-        .windowInsetsController
-    windowController?.hide(WindowInsetsCompat.Type.systemBars())
+//    val windowController = (LocalView.current.context as Activity)
+//        .window
+//        .decorView
+//        .windowInsetsController
+//    windowController?.hide(WindowInsetsCompat.Type.systemBars())
     BackHandler {
         navigateToPrePlay()
-        windowController?.show(WindowInsetsCompat.Type.systemBars())
+//        windowController?.show(WindowInsetsCompat.Type.systemBars())
     }
     Row(
         modifier = modifier

@@ -15,7 +15,7 @@ class GetCoordinateUseCase(
     ): Flow<Result> {
         val coordinates = coordinateRepository.getSavedCoordinate() ?: GetSavedCoordinateUseCase.Result(
             positionLeft = 0,
-            positionRight = 0
+            positionRight = 1000
         )
         return when (param.type) {
             Param.Type.NONE -> coordinateRepository.getCoordinateStream(ip = ipRepository.get()?.ip ?: "")
