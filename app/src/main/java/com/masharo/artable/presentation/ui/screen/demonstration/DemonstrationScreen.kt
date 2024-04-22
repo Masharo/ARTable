@@ -2,6 +2,7 @@ package com.masharo.artable.presentation.ui.screen.demonstration
 
 import android.app.Activity
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -21,23 +22,29 @@ import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowInsetsCompat
-import coil.compose.AsyncImage
+import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
+import androidx.media3.common.Player
+import androidx.media3.common.Player.REPEAT_MODE_ALL
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import com.masharo.artable.R
 import com.masharo.artable.presentation.model.DemonstrationUIState
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
@@ -135,7 +142,8 @@ fun DemonstrationPrePlay(
             ),
             onClick = {
                 photoPickerLauncher.launch(
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+//                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
                 )
             }
         ) {
@@ -158,9 +166,9 @@ fun DemonstrationPlay(
     img: Uri? = null
 ) {
     val scrollState = rememberScrollState()
-    LaunchedEffect(key1 = position) {
-        scrollState.scrollTo(position.toInt() * scrollState.maxValue / scrollCoefficient )
-    }
+//    LaunchedEffect(key1 = position) {
+//        scrollState.scrollTo(position.toInt() * scrollState.maxValue / scrollCoefficient )
+//    }
     val windowController = (LocalView.current.context as Activity)
         .window
         .decorView
@@ -186,12 +194,44 @@ fun DemonstrationPlay(
                 contentDescription = null
             )
         } else {
-            AsyncImage(
-                modifier = modifier
-                    .fillMaxHeight(),
-                model = img,
-                contentScale = ContentScale.FillHeight,
-                contentDescription = null
+//            AsyncImage(
+//                modifier = modifier
+//                    .fillMaxHeight(),
+//                model = img,
+//                contentScale = ContentScale.FillHeight,
+//                contentDescription = null
+//            )
+            val context = LocalContext.current
+
+            val mediaItem = MediaItem.Builder()
+                .setUri(img)
+                .build()
+
+            val exoPlayer = remember(context, mediaItem) {
+                ExoPlayer.Builder(context)
+                    .build()
+                    .also { exoPlayer ->
+                        exoPlayer.setMediaItem(mediaItem)
+                        exoPlayer.prepare()
+                        exoPlayer.playWhenReady = false
+                        exoPlayer.repeatMode = REPEAT_MODE_ALL
+                    }
+            }
+
+            DisposableEffect(Unit) {
+                onDispose {
+                    exoPlayer.release()
+                }
+            }
+
+            AndroidView(
+                factory = { ctx ->
+                    PlayerView(ctx).apply {
+                        player = exoPlayer
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxHeight()
             )
         }
     }
