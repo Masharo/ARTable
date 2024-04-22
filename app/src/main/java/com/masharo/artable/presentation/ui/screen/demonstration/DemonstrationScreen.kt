@@ -2,7 +2,6 @@ package com.masharo.artable.presentation.ui.screen.demonstration
 
 import android.app.Activity
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -23,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,9 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowInsetsCompat
 import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackException
-import androidx.media3.common.Player
 import androidx.media3.common.Player.REPEAT_MODE_ALL
+import androidx.media3.common.Player.REPEAT_MODE_ONE
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import com.masharo.artable.R
@@ -214,7 +211,7 @@ fun DemonstrationPlay(
                         exoPlayer.setMediaItem(mediaItem)
                         exoPlayer.prepare()
                         exoPlayer.playWhenReady = false
-                        exoPlayer.repeatMode = REPEAT_MODE_ALL
+                        exoPlayer.repeatMode = REPEAT_MODE_ONE
                     }
             }
 
