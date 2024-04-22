@@ -1,5 +1,6 @@
 package com.masharo.artable.presentation.ui.screen.demonstration
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masharo.artable.presentation.model.DemonstrationUIState
@@ -43,6 +44,14 @@ class DemonstrationViewModel(
                     )
                 }
             }
+        }
+    }
+
+    fun updateUri(value: Uri?) {
+        _uiState.update { currentValue ->
+            currentValue.copy(
+                selectedImg = value
+            )
         }
     }
 

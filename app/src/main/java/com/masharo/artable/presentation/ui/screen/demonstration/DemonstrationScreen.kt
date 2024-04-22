@@ -1,7 +1,11 @@
 package com.masharo.artable.presentation.ui.screen.demonstration
 
 import android.app.Activity
+import android.net.Uri
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -23,6 +27,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -31,11 +37,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsCompat
+import coil.compose.AsyncImage
 import com.masharo.artable.R
 import com.masharo.artable.presentation.model.DemonstrationUIState
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
 import com.masharo.artable.presentation.ui.theme.ARTableThemeState
-import kotlinx.coroutines.flow.MutableStateFlow
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -56,9 +62,11 @@ fun DemonstrationScreen(
             vm.updateState(DemonstrationUIState.State.PRE_PLAY)
             isVisibleBottomBar.value = true
         },
+        updateImg = vm::updateUri,
         isVisibleBottomBar = isVisibleBottomBar,
         scrollCoefficient = uiState.scrollCoefficient,
-        position = uiState.position
+        position = uiState.position,
+        img = uiState.selectedImg
     )
 }
 
@@ -67,17 +75,20 @@ fun DemonstrationScreen(
     modifier: Modifier = Modifier,
     state: DemonstrationUIState.State,
     position: Long,
+    img: Uri?,
     isVisibleBottomBar: MutableState<Boolean>,
     scrollCoefficient: Int,
+    updateImg: (Uri?) -> Unit,
     navigateToPlay: () -> Unit,
-    navigateToPrePlay: () -> Unit
+    navigateToPrePlay: () -> Unit,
 ) {
     when (state) {
         DemonstrationUIState.State.PRE_PLAY -> {
             isVisibleBottomBar.value = true
             DemonstrationPrePlay(
                 modifier = modifier,
-                navigateToPlay = navigateToPlay
+                navigateToPlay = navigateToPlay,
+                updateImg = updateImg
             )
         }
         DemonstrationUIState.State.PLAY -> {
@@ -86,7 +97,8 @@ fun DemonstrationScreen(
                 modifier = modifier,
                 navigateToPrePlay = navigateToPrePlay,
                 scrollCoefficient = scrollCoefficient,
-                position = position
+                position = position,
+                img = img
             )
         }
     }
@@ -95,8 +107,17 @@ fun DemonstrationScreen(
 @Composable
 fun DemonstrationPrePlay(
     modifier: Modifier = Modifier,
-    navigateToPlay: () -> Unit
+    navigateToPlay: () -> Unit,
+    updateImg: (Uri?) -> Unit
 ) {
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            updateImg(uri)
+            navigateToPlay()
+        }
+    )
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -112,7 +133,11 @@ fun DemonstrationPrePlay(
                 containerColor = ARTableThemeState.colors.thirdBackgroundColor,
                 contentColor = ARTableThemeState.colors.onThirdBackgroundColor
             ),
-            onClick = navigateToPlay
+            onClick = {
+                photoPickerLauncher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }
         ) {
             Icon(
                 modifier = modifier
@@ -129,7 +154,8 @@ fun DemonstrationPlay(
     modifier: Modifier = Modifier,
     navigateToPrePlay: () -> Unit,
     scrollCoefficient: Int,
-    position: Long
+    position: Long,
+    img: Uri? = null
 ) {
     val scrollState = rememberScrollState()
     LaunchedEffect(key1 = position) {
@@ -151,13 +177,23 @@ fun DemonstrationPlay(
                 state = scrollState
             )
     ) {
-        Image(
-            modifier = modifier
-                .fillMaxHeight(),
-            contentScale = ContentScale.FillHeight,
-            painter = painterResource(R.drawable.imgtest),
-            contentDescription = null
-        )
+        if (img == null) {
+            Image(
+                modifier = modifier
+                    .fillMaxHeight(),
+                contentScale = ContentScale.FillHeight,
+                painter = painterResource(R.drawable.imgtest),
+                contentDescription = null
+            )
+        } else {
+            AsyncImage(
+                modifier = modifier
+                    .fillMaxHeight(),
+                model = img,
+                contentScale = ContentScale.FillHeight,
+                contentDescription = null
+            )
+        }
     }
 }
 
