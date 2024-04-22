@@ -31,7 +31,7 @@ class CoordinateServiceKtor(
     override fun getCoordinate(ip: String): Flow<Coordinate> {
         return flow {
             session = client.webSocketSession {
-                url("ws://${ip}:8080/chat")
+                url("ws://${ip}:8080/ws")
             }
             val coordinates = session!!
                 .incoming
