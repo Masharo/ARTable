@@ -6,14 +6,17 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.OptIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -31,16 +34,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowInsetsCompat
+import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player.REPEAT_MODE_ALL
-import androidx.media3.common.Player.REPEAT_MODE_ONE
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL
+import androidx.media3.ui.AspectRatioFrameLayout.ResizeMode
 import androidx.media3.ui.PlayerView
 import com.masharo.artable.R
 import com.masharo.artable.presentation.model.DemonstrationUIState
@@ -154,7 +161,7 @@ fun DemonstrationPrePlay(
     }
 }
 
-@Composable
+@OptIn(UnstableApi::class) @Composable
 fun DemonstrationPlay(
     modifier: Modifier = Modifier,
     navigateToPrePlay: () -> Unit,
@@ -199,10 +206,13 @@ fun DemonstrationPlay(
 //                contentDescription = null
 //            )
             val context = LocalContext.current
+            val density = LocalDensity.current
 
             val mediaItem = MediaItem.Builder()
                 .setUri(img)
                 .build()
+
+            var width = 0.dp
 
             val exoPlayer = remember(context, mediaItem) {
                 ExoPlayer.Builder(context)
@@ -210,8 +220,10 @@ fun DemonstrationPlay(
                     .also { exoPlayer ->
                         exoPlayer.setMediaItem(mediaItem)
                         exoPlayer.prepare()
-                        exoPlayer.playWhenReady = false
-                        exoPlayer.repeatMode = REPEAT_MODE_ONE
+                        exoPlayer.playWhenReady = true
+                        exoPlayer.repeatMode = REPEAT_MODE_ALL
+                        width = with(density) { exoPlayer.videoSize.width.toDp() }
+                        exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
                     }
             }
 
@@ -225,10 +237,13 @@ fun DemonstrationPlay(
                 factory = { ctx ->
                     PlayerView(ctx).apply {
                         player = exoPlayer
+                        useController = false
+                        resizeMode = RESIZE_MODE_FILL
                     }
                 },
                 modifier = Modifier
                     .fillMaxHeight()
+                    .width(500.dp)
             )
         }
     }

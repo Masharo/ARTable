@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.masharo.artable.presentation.ui.screen.ARTableScreen
+import com.masharo.artable.presentation.ui.screen.TestVideo
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,6 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ARTableTheme {
                 ARTableScreen()
+//                TestVideo()
             }
         }
     }
