@@ -149,8 +149,7 @@ fun DemonstrationPrePlay(
             ),
             onClick = {
                 photoPickerLauncher.launch(
-//                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
                 )
             }
         ) {
