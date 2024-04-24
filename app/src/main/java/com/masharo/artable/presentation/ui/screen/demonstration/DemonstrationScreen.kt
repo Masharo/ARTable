@@ -1,22 +1,25 @@
 package com.masharo.artable.presentation.ui.screen.demonstration
 
 import android.app.Activity
+import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
-import androidx.compose.foundation.Image
+import androidx.compose.animation.core.FloatTweenSpec
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -25,6 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,9 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -47,9 +49,8 @@ import androidx.media3.common.Player.REPEAT_MODE_ALL
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL
-import androidx.media3.ui.AspectRatioFrameLayout.ResizeMode
 import androidx.media3.ui.PlayerView
-import com.masharo.artable.R
+import coil.compose.AsyncImage
 import com.masharo.artable.presentation.model.DemonstrationUIState
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
 import com.masharo.artable.presentation.ui.theme.ARTableThemeState
@@ -125,7 +126,9 @@ fun DemonstrationPrePlay(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             updateImg(uri)
-            navigateToPlay()
+            if (uri != null) {
+                navigateToPlay()
+            }
         }
     )
 
@@ -170,9 +173,14 @@ fun DemonstrationPlay(
     img: Uri? = null
 ) {
     val scrollState = rememberScrollState()
-//    LaunchedEffect(key1 = position) {
-//        scrollState.scrollTo(position.toInt() * scrollState.maxValue / scrollCoefficient )
-//    }
+    LaunchedEffect(position) {
+        scrollState.animateScrollTo(
+            value = position.toInt() * scrollState.maxValue / scrollCoefficient,
+            animationSpec = FloatTweenSpec(
+                duration = 100
+            )
+        )
+    }
     val windowController = (LocalView.current.context as Activity)
         .window
         .decorView
@@ -182,6 +190,35 @@ fun DemonstrationPlay(
         navigateToPrePlay()
         windowController?.show(WindowInsetsCompat.Type.systemBars())
     }
+
+    img?.let {
+        val context = LocalContext.current
+        if (isVideo(it, context)) {
+            DemonstrationVideoResource(
+                modifier = modifier,
+                uri = it,
+                context = context,
+                scrollState = scrollState
+            )
+        } else {
+            DemonstrationImageResource(
+                modifier = modifier,
+                uri = img,
+                scrollState = scrollState
+            )
+        }
+    } ?: run {
+        navigateToPrePlay()
+        windowController?.show(WindowInsetsCompat.Type.systemBars())
+    }
+}
+
+@Composable
+fun DemonstrationImageResource(
+    modifier: Modifier = Modifier,
+    uri: Uri,
+    scrollState: ScrollState
+) {
     Row(
         modifier = modifier
             .fillMaxSize()
@@ -189,64 +226,83 @@ fun DemonstrationPlay(
                 state = scrollState
             )
     ) {
-        if (img == null) {
-            Image(
-                modifier = modifier
-                    .fillMaxHeight(),
-                contentScale = ContentScale.FillHeight,
-                painter = painterResource(R.drawable.imgtest),
-                contentDescription = null
-            )
-        } else {
-//            AsyncImage(
-//                modifier = modifier
-//                    .fillMaxHeight(),
-//                model = img,
-//                contentScale = ContentScale.FillHeight,
-//                contentDescription = null
-//            )
-            val context = LocalContext.current
-            val density = LocalDensity.current
+        AsyncImage(
+            modifier = modifier
+                .fillMaxHeight(),
+            model = uri,
+            contentScale = ContentScale.FillHeight,
+            contentDescription = null
+        )
+    }
+}
 
-            val mediaItem = MediaItem.Builder()
-                .setUri(img)
-                .build()
+@OptIn(UnstableApi::class) @Composable
+fun DemonstrationVideoResource(
+    modifier: Modifier = Modifier,
+    context: Context,
+    uri: Uri,
+    scrollState: ScrollState
+) {
+    val mediaItem = MediaItem.Builder()
+        .setUri(uri)
+        .build()
 
-            var width = 0.dp
+    val aspectRatio = getVideoAspectRatio(uri, context)
 
-            val exoPlayer = remember(context, mediaItem) {
-                ExoPlayer.Builder(context)
-                    .build()
-                    .also { exoPlayer ->
-                        exoPlayer.setMediaItem(mediaItem)
-                        exoPlayer.prepare()
-                        exoPlayer.playWhenReady = true
-                        exoPlayer.repeatMode = REPEAT_MODE_ALL
-                        width = with(density) { exoPlayer.videoSize.width.toDp() }
-                        exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
-                    }
+    val exoPlayer = remember(context, mediaItem) {
+        ExoPlayer.Builder(context)
+            .build()
+            .also { exoPlayer ->
+                exoPlayer.setMediaItem(mediaItem)
+                exoPlayer.prepare()
+                exoPlayer.playWhenReady = true
+                exoPlayer.repeatMode = REPEAT_MODE_ALL
+                exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
             }
+    }
 
-            DisposableEffect(Unit) {
-                onDispose {
-                    exoPlayer.release()
-                }
-            }
-
-            AndroidView(
-                factory = { ctx ->
-                    PlayerView(ctx).apply {
-                        player = exoPlayer
-                        useController = false
-                        resizeMode = RESIZE_MODE_FILL
-                    }
-                },
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(500.dp)
-            )
+    DisposableEffect(Unit) {
+        onDispose {
+            exoPlayer.release()
         }
     }
+
+    AndroidView(
+        factory = { ctx ->
+            PlayerView(ctx).apply {
+                player = exoPlayer
+                useController = false
+                resizeMode = RESIZE_MODE_FILL
+            }
+        },
+        modifier = modifier
+            .fillMaxSize()
+            .horizontalScroll(scrollState)
+            .aspectRatio(aspectRatio)
+    )
+}
+
+fun getVideoAspectRatio(uri: Uri, context: Context): Float {
+    val retriever = MediaMetadataRetriever()
+    retriever.setDataSource(context, uri)
+    val width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toFloat() ?: 0f
+    val height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toFloat() ?: 0f
+    retriever.release()
+
+    return if (width > 0 && height > 0) {
+        width / height
+    } else {
+        0f
+    }
+}
+
+fun isVideo(uri: Uri, context: Context): Boolean {
+    val retriever = MediaMetadataRetriever()
+    retriever.setDataSource(context, uri)
+    val hasVideo = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO)
+    retriever.release()
+
+    return hasVideo == "yes"
 }
 
 @Preview(showBackground = true)
