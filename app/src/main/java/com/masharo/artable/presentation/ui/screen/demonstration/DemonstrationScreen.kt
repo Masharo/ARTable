@@ -149,7 +149,8 @@ fun DemonstrationPrePlay(
             ),
             onClick = {
                 photoPickerLauncher.launch(
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
+//                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
                 )
             }
         ) {
@@ -173,12 +174,13 @@ fun DemonstrationPlay(
 ) {
     val scrollState = rememberScrollState()
     LaunchedEffect(position) {
-        scrollState.animateScrollTo(
-            value = position.toInt() * scrollState.maxValue / scrollCoefficient,
-            animationSpec = FloatTweenSpec(
-                duration = 100
-            )
-        )
+//        scrollState.animateScrollTo(
+//            value = position.toInt() * scrollState.maxValue / scrollCoefficient,
+//            animationSpec = FloatTweenSpec(
+//                duration = 100
+//            )
+//        )
+        scrollState.scrollTo(position.toInt() * scrollState.maxValue / scrollCoefficient)
     }
     val windowController = (LocalView.current.context as Activity)
         .window
