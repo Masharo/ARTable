@@ -7,7 +7,3 @@ import kotlinx.serialization.Serializable
 data class Coordinate(
     val position: Long
 )
-
-fun Coordinate.toGetCoordinateUseCase() = GetCoordinateUseCase.Result(
-    position = position
-)

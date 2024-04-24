@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 
 sealed interface CoordinateResponse
 
-data object Error : CoordinateResponse
-data class Success(
+data object ErrorCoordinateResponse : CoordinateResponse
+data class SuccessCoordinateResponse(
     val coordinate: Flow<Coordinate>
 ) : CoordinateResponse

@@ -4,13 +4,11 @@ import android.app.Activity
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
-import androidx.compose.animation.core.FloatTweenSpec
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -149,8 +147,7 @@ fun DemonstrationPrePlay(
             ),
             onClick = {
                 photoPickerLauncher.launch(
-//                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
-                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly)
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo)
                 )
             }
         ) {
@@ -174,12 +171,6 @@ fun DemonstrationPlay(
 ) {
     val scrollState = rememberScrollState()
     LaunchedEffect(position) {
-//        scrollState.animateScrollTo(
-//            value = position.toInt() * scrollState.maxValue / scrollCoefficient,
-//            animationSpec = FloatTweenSpec(
-//                duration = 100
-//            )
-//        )
         scrollState.scrollTo(position.toInt() * scrollState.maxValue / scrollCoefficient)
     }
     val windowController = (LocalView.current.context as Activity)
@@ -259,6 +250,7 @@ fun DemonstrationVideoResource(
                 exoPlayer.playWhenReady = true
                 exoPlayer.repeatMode = REPEAT_MODE_ALL
                 exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
+                exoPlayer.volume = 0f
             }
     }
 
@@ -298,12 +290,15 @@ fun getVideoAspectRatio(uri: Uri, context: Context): Float {
 }
 
 fun isVideo(uri: Uri, context: Context): Boolean {
-    val retriever = MediaMetadataRetriever()
-    retriever.setDataSource(context, uri)
-    val hasVideo = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO)
-    retriever.release()
-
-    return hasVideo == "yes"
+    return try {
+        val retriever = MediaMetadataRetriever()
+        retriever.setDataSource(context, uri)
+        val hasVideo = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_HAS_VIDEO)
+        retriever.release()
+        hasVideo == "yes"
+    } catch (ex: Exception) {
+        false
+    }
 }
 
 @Preview(showBackground = true)

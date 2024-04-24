@@ -12,23 +12,30 @@ class GetCoordinateUseCase(
 
     fun execute(
         param: Param = Param()
-    ): Flow<Result> {
+    ): Result {
         val coordinates = coordinateRepository.getSavedCoordinate() ?: GetSavedCoordinateUseCase.Result(
             positionLeft = 0,
             positionRight = 0
         )
-        return when (param.type) {
-            Param.Type.NONE -> coordinateRepository.getCoordinateStream(ip = ipRepository.get()?.ip ?: "")
-            Param.Type.RANGE -> coordinateRepository.getCoordinateStream(ip = ipRepository.get()?.ip ?: "")
-                .filter {
-                    it.position in (coordinates.positionLeft ?: 0)..(coordinates.positionRight ?: 0)
-                }
-        }
+        val result = coordinateRepository.getCoordinateStream(ip = ipRepository.get()?.ip ?: "")
+        return if (param.type == Param.Type.RANGE && result is SuccessResult) {
+            SuccessResult(
+                result
+                    .position
+                    .filter {
+                        it in (coordinates.positionLeft
+                            ?: 0)..(coordinates.positionRight ?: 0)
+                    }
+            )
+        } else result
     }
 
-    data class Result(
-        val position: Long
-    )
+    sealed interface Result
+
+    data object ErrorResult : Result
+    data class SuccessResult(
+        val position: Flow<Long>
+    ) : Result
 
     data class Param(
         val type: Type = Type.NONE
