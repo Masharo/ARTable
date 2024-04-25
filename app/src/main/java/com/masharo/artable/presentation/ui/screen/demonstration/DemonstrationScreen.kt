@@ -17,13 +17,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -37,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -49,7 +55,12 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.AspectRatioFrameLayout.RESIZE_MODE_FILL
 import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
+import com.masharo.artable.R
 import com.masharo.artable.presentation.model.DemonstrationUIState
+import com.masharo.artable.presentation.ui.screen.ARTableButtonCard
+import com.masharo.artable.presentation.ui.screen.ARTableCard
+import com.masharo.artable.presentation.ui.screen.ARTableCardHeader
+import com.masharo.artable.presentation.ui.screen.ConnectErrorDialog
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
 import com.masharo.artable.presentation.ui.theme.ARTableThemeState
 import org.koin.androidx.compose.koinViewModel
@@ -76,7 +87,12 @@ fun DemonstrationScreen(
         isVisibleBottomBar = isVisibleBottomBar,
         scrollCoefficient = uiState.scrollCoefficient,
         position = uiState.position,
-        img = uiState.selectedImg
+        img = uiState.selectedImg,
+        hasError = uiState.hasError,
+        reConnect = vm::connect,
+        updateErrorToFalse = {
+            vm.updateError(false)
+        }
     )
 }
 
@@ -91,6 +107,9 @@ fun DemonstrationScreen(
     updateImg: (Uri?) -> Unit,
     navigateToPlay: () -> Unit,
     navigateToPrePlay: () -> Unit,
+    hasError: Boolean,
+    reConnect: () -> Unit,
+    updateErrorToFalse: () -> Unit
 ) {
     when (state) {
         DemonstrationUIState.State.PRE_PLAY -> {
@@ -108,7 +127,10 @@ fun DemonstrationScreen(
                 navigateToPrePlay = navigateToPrePlay,
                 scrollCoefficient = scrollCoefficient,
                 position = position,
-                img = img
+                img = img,
+                hasError = hasError,
+                reConnect = reConnect,
+                updateErrorToFalse = updateErrorToFalse
             )
         }
     }
@@ -167,7 +189,10 @@ fun DemonstrationPlay(
     navigateToPrePlay: () -> Unit,
     scrollCoefficient: Int,
     position: Long,
-    img: Uri? = null
+    img: Uri? = null,
+    hasError: Boolean,
+    reConnect: () -> Unit,
+    updateErrorToFalse: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     LaunchedEffect(position) {
@@ -181,6 +206,17 @@ fun DemonstrationPlay(
     BackHandler {
         navigateToPrePlay()
         windowController?.show(WindowInsetsCompat.Type.systemBars())
+    }
+
+    if (hasError) {
+        ConnectErrorDialog(
+            reConnect = reConnect,
+            updateErrorToFalse = updateErrorToFalse,
+            navigateToPrev = {
+                navigateToPrePlay()
+                windowController?.show(WindowInsetsCompat.Type.systemBars())
+            }
+        )
     }
 
     img?.let {
@@ -324,7 +360,10 @@ fun DemonstrationStartPreview() {
         DemonstrationPlay(
             position = 0,
             navigateToPrePlay = {},
-            scrollCoefficient = 1
+            scrollCoefficient = 1,
+            hasError = false,
+            reConnect = {},
+            updateErrorToFalse = {}
         )
     }
 }

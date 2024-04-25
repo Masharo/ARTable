@@ -1,5 +1,6 @@
 package com.masharo.artable.service
 
+import android.util.Log
 import com.masharo.artable.model.SuccessCoordinateResponse
 import com.masharo.artable.model.CoordinateResponse
 import com.masharo.artable.model.ErrorCoordinateResponse

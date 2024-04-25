@@ -57,12 +57,6 @@ val dataModule = module {
             install(WebSockets) {
                 pingInterval = 10
             }
-            this.expectSuccess = true
-            HttpResponseValidator {
-                validateResponse { response ->
-                    if (response.status != HttpStatusCode.OK) throw Exception("MY BIG EXCEPTION")
-                }
-            }
         }
     }
 

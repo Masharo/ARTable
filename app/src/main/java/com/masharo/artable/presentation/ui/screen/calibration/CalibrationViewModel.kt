@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.koin.compose.currentKoinScope
 
 class CalibrationViewModel(
     private val getCoordinateUseCase: GetCoordinateUseCase,
@@ -29,6 +30,14 @@ class CalibrationViewModel(
     )
     val uiState = _uiState.asStateFlow()
 
+    fun updateError(value: Boolean) {
+        _uiState.update { currentValue ->
+            currentValue.copy(
+                hasError = value
+            )
+        }
+    }
+
     fun connect() {
         viewModelScope.launch(Dispatchers.IO) {
             getCoordinateUseCase.execute().collect { result ->
@@ -40,6 +49,7 @@ class CalibrationViewModel(
                     }
                     is GetCoordinateUseCase.ErrorResult -> {
                         closeConnect()
+
                     }
                 }
             }
@@ -87,11 +97,24 @@ class CalibrationViewModel(
     fun navigateToCalculationState(
         state: CalibrationUIState.State
     ) {
+        when (state) {
+            CalibrationUIState.State.CALIBRATION_LEFT, CalibrationUIState.State.CALIBRATION_RIGHT -> {
+                connect()
+            }
+            CalibrationUIState.State.START -> {
+                closeConnect()
+            }
+        }
         _uiState.update { currentValue ->
             currentValue.copy(
                 state = state
             )
         }
+    }
+
+    override fun onCleared() {
+        closeConnect()
+        super.onCleared()
     }
 
 }

@@ -1,1 +1,1 @@
-INSERT INTO ip (value) VALUES ('192.168.4.1')
+INSERT INTO ip (value) VALUES ('192.168.4.1:8080')

@@ -20,7 +20,7 @@ class DemonstrationViewModel(
 ) : ViewModel() {
 
     private var minScrollCoefficient = 1
-    private var step = 2
+    private var step = 4
     private var prevPosition = Int.MIN_VALUE
 
     private val _uiState = MutableStateFlow(
@@ -90,7 +90,15 @@ class DemonstrationViewModel(
         }
     }
 
-    private fun connect() {
+    fun updateError(value: Boolean) {
+        _uiState.update { currentValue ->
+            currentValue.copy(
+                hasError = value
+            )
+        }
+    }
+
+    fun connect() {
         viewModelScope.launch(Dispatchers.IO) {
             val result = getCoordinateUseCase.execute(
                 param = GetCoordinateUseCase.Param(
@@ -104,14 +112,21 @@ class DemonstrationViewModel(
                         val newPosition = it.position - minScrollCoefficient
                         if (newPosition !in (prevPosition - step)..(prevPosition + step)) {
                             updatePosition(it.position - minScrollCoefficient)
+
                         }
                     }
                     is GetCoordinateUseCase.ErrorResult -> {
+                        updateError(true)
                         closeConnect()
                     }
                 }
             }
         }
+    }
+
+    override fun onCleared() {
+        closeConnect()
+        super.onCleared()
     }
 
 }

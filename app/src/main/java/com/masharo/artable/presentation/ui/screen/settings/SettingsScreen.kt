@@ -14,7 +14,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -29,11 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.masharo.artable.R
 import com.masharo.artable.presentation.model.SettingsUIState
+import com.masharo.artable.presentation.ui.screen.ARTableButtonCard
+import com.masharo.artable.presentation.ui.screen.ARTableCard
+import com.masharo.artable.presentation.ui.screen.ARTableCardHeader
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
 import com.masharo.artable.presentation.ui.theme.ARTableThemeState
 import org.koin.androidx.compose.koinViewModel
@@ -139,10 +140,10 @@ fun SettingsManualCalibrateChangeDialog(
         modifier = modifier,
         onDismissRequest = closeDialog
     ) {
-        SettingsCard(
+        ARTableCard(
             modifier = modifier
         ) {
-            SettingsCardHeader(
+            ARTableCardHeader(
                 title = stringResource(R.string.settings_calibrate_title)
             )
             SettingsModalOutlinedTextField(
@@ -161,7 +162,7 @@ fun SettingsManualCalibrateChangeDialog(
                 keyboardType = KeyboardType.Number,
                 label = "Правый край"
             )
-            SettingsButtonCard(
+            ARTableButtonCard(
                 modifier = Modifier
                     .padding(
                         bottom = 15.dp
@@ -221,10 +222,10 @@ fun SettingsChangeIPDialog(
         modifier = modifier,
         onDismissRequest = closeDialog
     ) {
-        SettingsCard(
+        ARTableCard(
             modifier = modifier
         ) {
-            SettingsCardHeader(
+            ARTableCardHeader(
                 title = stringResource(R.string.settings_ip_title)
             )
             SettingsModalOutlinedTextField(
@@ -234,7 +235,7 @@ fun SettingsChangeIPDialog(
                 },
                 label = "IP адрес"
             )
-            SettingsButtonCard(
+            ARTableButtonCard(
                 modifier = Modifier
                     .padding(
                         bottom = 15.dp
@@ -249,29 +250,6 @@ fun SettingsChangeIPDialog(
 }
 
 @Composable
-fun SettingsCard(
-    modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-    ) {
-        Column(
-            modifier = Modifier
-                .background(
-                    color = ARTableThemeState.colors.secondBackground
-                )
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(15.dp)
-        ) {
-            content()
-        }
-    }
-}
-
-@Composable
 fun SettingsCalibrateCard(
     modifier: Modifier = Modifier,
     leftValue: String?,
@@ -279,10 +257,10 @@ fun SettingsCalibrateCard(
     onClickManualCalibrate: () -> Unit,
     onClickAutomaticCalibrate: () -> Unit
 ) {
-    SettingsCard(
+    ARTableCard(
         modifier = modifier
     ) {
-        SettingsCardHeader(
+        ARTableCardHeader(
             title = stringResource(R.string.settings_calibrate_title)
         )
         Row(
@@ -302,11 +280,11 @@ fun SettingsCalibrateCard(
                 value = rightValue ?: stringResource(R.string.settings_value_not_found)
             )
         }
-        SettingsButtonCard(
+        ARTableButtonCard(
             text = stringResource(R.string.settings_manual_calibrate),
             onClick = onClickManualCalibrate
         )
-        SettingsButtonCard(
+        ARTableButtonCard(
             modifier = Modifier
                 .padding(
                     bottom = 15.dp
@@ -346,10 +324,10 @@ fun SettingsIPCard(
     ip: String,
     onClickChangeIp: () -> Unit
 ) {
-    SettingsCard(
+    ARTableCard(
         modifier = modifier
     ) {
-        SettingsCardHeader(
+        ARTableCardHeader(
             title = stringResource(R.string.settings_ip_title)
         )
         Text(
@@ -361,60 +339,13 @@ fun SettingsIPCard(
             color = ARTableThemeState.colors.onSecondBackground,
             style = ARTableThemeState.typography.bigText
         )
-        SettingsButtonCard(
+        ARTableButtonCard(
             modifier = Modifier
                 .padding(
                     bottom = 15.dp
                 ),
             onClick = onClickChangeIp,
             text = stringResource(R.string.settings_button_change_ip)
-        )
-    }
-}
-
-@Composable
-fun ColumnScope.SettingsCardHeader(
-    modifier: Modifier = Modifier,
-    title: String
-) {
-    Text(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = ARTableThemeState.colors.thirdBackgroundColor
-            )
-            .padding(
-                vertical = 15.dp
-            ),
-        color = ARTableThemeState.colors.onSecondBackground,
-        textAlign = TextAlign.Center,
-        style = ARTableThemeState.typography.header,
-        text = title
-    )
-}
-
-@Composable
-fun ColumnScope.SettingsButtonCard(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-    text: String
-) {
-    Button(
-        modifier = modifier
-            .fillMaxWidth(0.8f),
-        colors = ButtonDefaults.buttonColors(
-            contentColor = ARTableThemeState.colors.onThirdBackgroundColor,
-            containerColor = ARTableThemeState.colors.thirdBackgroundColor
-        ),
-        shape = RoundedCornerShape(10.dp),
-        onClick = onClick
-    ) {
-        Text(
-            modifier = Modifier
-                .padding(4.dp),
-            text = text,
-            color = ARTableThemeState.colors.onThirdBackgroundColor,
-            style = ARTableThemeState.typography.button
         )
     }
 }

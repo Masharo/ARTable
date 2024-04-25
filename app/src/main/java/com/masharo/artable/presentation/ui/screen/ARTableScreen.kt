@@ -1,11 +1,7 @@
 package com.masharo.artable.presentation.ui.screen
 
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomNavigation
@@ -18,13 +14,11 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -35,8 +29,6 @@ import com.masharo.artable.presentation.navigation.Settings
 import com.masharo.artable.presentation.navigation.defaultARTableNavState
 import com.masharo.artable.presentation.navigation.navigationGraphARTable
 import com.masharo.artable.presentation.navigation.toARTableNavState
-import com.masharo.artable.presentation.ui.screen.calibration.CalibrationScreen
-import com.masharo.artable.presentation.ui.screen.settings.SettingsScreen
 import com.masharo.artable.presentation.ui.theme.ARTableThemeState
 
 @Composable

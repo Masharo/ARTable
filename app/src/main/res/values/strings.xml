@@ -10,4 +10,8 @@
     <string name="settings_automatic_calibrate">Автоматическая</string>
     <string name="settings_ip_title">IP</string>
     <string name="settings_button_change_ip">Изменить</string>
+
+    <string name="demonstration_error_message_header">Ошибка</string>
+    <string name="demonstration_error_message_body">Нарушено соединение с сервером</string>
+    <string name="demonstration_error_message_button">Повторить</string>
 </resources>

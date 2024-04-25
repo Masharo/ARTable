@@ -6,7 +6,8 @@ data class CalibrationUIState(
     val leftValue: Long,
     val rightValue: Long,
     val position: Long = 0L,
-    val state: State = State.START
+    val state: State = State.START,
+    val hasError: Boolean = false
 ) {
     enum class State {
         START,

@@ -4,7 +4,6 @@ import com.masharo.artable.repository.CoordinateRepository
 import com.masharo.artable.repository.IPRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
 
 class GetCoordinateUseCase(
     private val coordinateRepository: CoordinateRepository,

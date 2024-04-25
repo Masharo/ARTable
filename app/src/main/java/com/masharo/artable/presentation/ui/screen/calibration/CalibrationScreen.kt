@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.masharo.artable.presentation.model.CalibrationUIState
+import com.masharo.artable.presentation.ui.screen.ConnectErrorDialog
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
 import com.masharo.artable.presentation.ui.theme.ARTableThemeState
 import org.koin.androidx.compose.koinViewModel
@@ -43,8 +44,6 @@ fun CalibrationScreen(
         modifier = modifier,
         uiState = uiState,
         save = vm::save,
-        connect = vm::connect,
-        closeConnect = vm::closeConnect,
         saveLeftPosition = vm::saveLeftPosition,
         saveRightPosition = vm::saveRightPosition,
         navigateToCalibrationLeft = {
@@ -55,6 +54,10 @@ fun CalibrationScreen(
         },
         navigateToCalibrationStart = {
             vm.navigateToCalculationState(CalibrationUIState.State.START)
+        },
+        reConnect = vm::connect,
+        updateErrorToFalse = {
+            vm.updateError(false)
         }
     )
 }
@@ -64,19 +67,18 @@ fun CalibrationScreen(
     modifier: Modifier = Modifier,
     uiState: CalibrationUIState,
     save: () -> Unit,
-    connect: () -> Unit,
-    closeConnect: () -> Unit,
     saveLeftPosition: () -> Unit,
     saveRightPosition: () -> Unit,
     navigateToCalibrationStart: () -> Unit,
     navigateToCalibrationLeft: () -> Unit,
-    navigateToCalibrationRight: () -> Unit
+    navigateToCalibrationRight: () -> Unit,
+    reConnect: () -> Unit,
+    updateErrorToFalse: () -> Unit
 ) {
     when (uiState.state) {
         CalibrationUIState.State.START              -> CalibrationPlay(
             modifier = modifier,
             onClickStart = {
-                connect()
                 navigateToCalibrationLeft()
             }
         )
@@ -88,7 +90,11 @@ fun CalibrationScreen(
                 saveLeftPosition()
                 navigateToCalibrationRight()
             },
-            icon = Icons.Filled.ArrowForward
+            icon = Icons.Filled.ArrowForward,
+            hasError = uiState.hasError,
+            navigateToCalibrationStart = navigateToCalibrationStart,
+            reConnect = reConnect,
+            updateErrorToFalse = updateErrorToFalse
         )
         CalibrationUIState.State.CALIBRATION_RIGHT  -> CalibrationStart(
             modifier = modifier,
@@ -97,10 +103,13 @@ fun CalibrationScreen(
             onClickReady = {
                 saveRightPosition()
                 save()
-                closeConnect()
                 navigateToCalibrationStart()
             },
-            icon = Icons.Filled.ArrowBack
+            icon = Icons.Filled.ArrowBack,
+            hasError = uiState.hasError,
+            navigateToCalibrationStart = navigateToCalibrationStart,
+            reConnect = reConnect,
+            updateErrorToFalse = updateErrorToFalse
         )
     }
 }
@@ -142,8 +151,23 @@ fun CalibrationStart(
     position: Long = 0L,
     text: String,
     onClickReady: () -> Unit,
-    icon: ImageVector
+    icon: ImageVector,
+    hasError: Boolean,
+    navigateToCalibrationStart: () -> Unit,
+    reConnect: () -> Unit,
+    updateErrorToFalse: () -> Unit
 ) {
+    if (hasError) {
+        ConnectErrorDialog(
+            reConnect = reConnect,
+            updateErrorToFalse = updateErrorToFalse,
+            navigateToPrev = {
+                updateErrorToFalse()
+                navigateToCalibrationStart()
+            }
+        )
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -199,13 +223,13 @@ fun CalibrationScreenPreview() {
         CalibrationScreen(
             uiState = CalibrationUIState(0, 0),
             save = {},
-            connect = {},
-            closeConnect = {},
             saveRightPosition = {},
             saveLeftPosition = {},
             navigateToCalibrationStart = {},
             navigateToCalibrationLeft = {},
-            navigateToCalibrationRight = {}
+            navigateToCalibrationRight = {},
+            reConnect = {},
+            updateErrorToFalse = {}
         )
     }
 }
@@ -217,7 +241,11 @@ fun CalibrationRightPreview() {
         CalibrationStart(
             text = "Сдвиньте устройство максимально вправо",
             onClickReady = {},
-            icon = Icons.Filled.ArrowForward
+            icon = Icons.Filled.ArrowForward,
+            hasError = false,
+            navigateToCalibrationStart = {},
+            reConnect = {},
+            updateErrorToFalse = {}
         )
     }
 }
