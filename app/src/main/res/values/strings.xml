@@ -9,9 +9,16 @@
     <string name="settings_manual_calibrate">Ручная калибровка</string>
     <string name="settings_automatic_calibrate">Автоматическая</string>
     <string name="settings_ip_title">IP</string>
+    <string name="settings_ip_label">IP адрес</string>
     <string name="settings_button_change_ip">Изменить</string>
+    <string name="settings_button_save">Сохранить</string>
 
     <string name="demonstration_error_message_header">Ошибка</string>
     <string name="demonstration_error_message_body">Нарушено соединение с сервером</string>
     <string name="demonstration_error_message_button">Повторить</string>
+    
+    <string name="calibration_move_to_right">Сдвиньте устройство максимально вправо</string>
+    <string name="calibration_move_to_left">Сдвиньте устройство максимально влево</string>
+    <string name="calibration_button_start">Начать калибровку</string>
+    <string name="calibration_position">Позиция</string>
 </resources>

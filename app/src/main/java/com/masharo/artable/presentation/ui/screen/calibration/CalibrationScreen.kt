@@ -24,12 +24,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.masharo.artable.R
 import com.masharo.artable.presentation.model.CalibrationUIState
-import com.masharo.artable.presentation.ui.screen.ConnectErrorDialog
+import com.masharo.artable.presentation.ui.screen.core.ConnectErrorDialog
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
 import com.masharo.artable.presentation.ui.theme.ARTableThemeState
 import org.koin.androidx.compose.koinViewModel
@@ -37,7 +38,8 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun CalibrationScreen(
     modifier: Modifier = Modifier,
-    vm: CalibrationViewModel = koinViewModel()
+    vm: CalibrationViewModel = koinViewModel(),
+    navigateBack: () -> Unit
 ) {
     val uiState by vm.uiState.collectAsState()
     CalibrationScreen(
@@ -58,7 +60,8 @@ fun CalibrationScreen(
         reConnect = vm::connect,
         updateErrorToFalse = {
             vm.updateError(false)
-        }
+        },
+        navigateBack = navigateBack
     )
 }
 
@@ -73,7 +76,8 @@ fun CalibrationScreen(
     navigateToCalibrationLeft: () -> Unit,
     navigateToCalibrationRight: () -> Unit,
     reConnect: () -> Unit,
-    updateErrorToFalse: () -> Unit
+    updateErrorToFalse: () -> Unit,
+    navigateBack: () -> Unit
 ) {
     when (uiState.state) {
         CalibrationUIState.State.START              -> CalibrationPlay(
@@ -85,7 +89,7 @@ fun CalibrationScreen(
         CalibrationUIState.State.CALIBRATION_LEFT   -> CalibrationStart(
             modifier = modifier,
             position = uiState.position,
-            text = "Сдвиньте устройство максимально вправо",
+            text = stringResource(R.string.calibration_move_to_right),
             onClickReady = {
                 saveLeftPosition()
                 navigateToCalibrationRight()
@@ -99,11 +103,11 @@ fun CalibrationScreen(
         CalibrationUIState.State.CALIBRATION_RIGHT  -> CalibrationStart(
             modifier = modifier,
             position = uiState.position,
-            text = "Сдвиньте устройство максимально влево",
+            text = stringResource(R.string.calibration_move_to_left),
             onClickReady = {
                 saveRightPosition()
                 save()
-                navigateToCalibrationStart()
+                navigateBack()
             },
             icon = Icons.Filled.ArrowBack,
             hasError = uiState.hasError,
@@ -138,7 +142,7 @@ fun CalibrationPlay(
             Text(
                 modifier = Modifier
                     .padding(8.dp),
-                text = "Начать калибровку",
+                text = stringResource(R.string.calibration_button_start),
                 style = ARTableThemeState.typography.bigText
             )
         }
@@ -190,7 +194,7 @@ fun CalibrationStart(
             color = ARTableThemeState.colors.onBackgroundColor
         )
         Text(
-            text = "Позиция: ${position}",
+            text = "${stringResource(R.string.calibration_position)}: $position",
             style = ARTableThemeState.typography.middleText,
             color = ARTableThemeState.colors.onBackgroundColor
         )
@@ -229,7 +233,8 @@ fun CalibrationScreenPreview() {
             navigateToCalibrationLeft = {},
             navigateToCalibrationRight = {},
             reConnect = {},
-            updateErrorToFalse = {}
+            updateErrorToFalse = {},
+            navigateBack = {}
         )
     }
 }

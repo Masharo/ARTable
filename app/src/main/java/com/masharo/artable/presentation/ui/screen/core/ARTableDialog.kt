@@ -1,4 +1,4 @@
-package com.masharo.artable.presentation.ui.screen
+package com.masharo.artable.presentation.ui.screen.core
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

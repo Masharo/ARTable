@@ -17,7 +17,9 @@ fun NavGraphBuilder.navigationGraphARTable(
             navController.navigate(Calibration.route)
         }
     )
-    navigateToCalibrate()
+    navigateToCalibrate(
+        navigateBack = navController::popBackStack
+    )
     navigateToDemonstration(
         isVisibleBottomBar = isVisibleBottomBar
     )
@@ -33,9 +35,13 @@ fun NavGraphBuilder.navigateToSettings(
     }
 }
 
-fun NavGraphBuilder.navigateToCalibrate() {
+fun NavGraphBuilder.navigateToCalibrate(
+    navigateBack: () -> Unit
+) {
     composable(route = Calibration.route) {
-        CalibrationScreen()
+        CalibrationScreen(
+            navigateBack = navigateBack
+        )
     }
 }
 

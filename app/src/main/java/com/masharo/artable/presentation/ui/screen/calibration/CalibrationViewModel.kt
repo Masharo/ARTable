@@ -10,11 +10,8 @@ import com.masharo.artable.usecase.SaveCoordinateUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.koin.compose.currentKoinScope
 
 class CalibrationViewModel(
     private val getCoordinateUseCase: GetCoordinateUseCase,
@@ -49,7 +46,7 @@ class CalibrationViewModel(
                     }
                     is GetCoordinateUseCase.ErrorResult -> {
                         closeConnect()
-
+                        updateError(true)
                     }
                 }
             }

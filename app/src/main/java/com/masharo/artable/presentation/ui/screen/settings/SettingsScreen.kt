@@ -4,21 +4,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,9 +29,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.masharo.artable.R
 import com.masharo.artable.presentation.model.SettingsUIState
-import com.masharo.artable.presentation.ui.screen.ARTableButtonCard
-import com.masharo.artable.presentation.ui.screen.ARTableCard
-import com.masharo.artable.presentation.ui.screen.ARTableCardHeader
+import com.masharo.artable.presentation.ui.screen.core.ARTableButtonCard
+import com.masharo.artable.presentation.ui.screen.core.ARTableCard
+import com.masharo.artable.presentation.ui.screen.core.ARTableCardHeader
 import com.masharo.artable.presentation.ui.theme.ARTableTheme
 import com.masharo.artable.presentation.ui.theme.ARTableThemeState
 import org.koin.androidx.compose.koinViewModel
@@ -82,7 +79,8 @@ fun SettingsScreen(
         onClickManualCalibrate = {
             vm.updateIsChangeCalibration(true)
         },
-        onClickAutomaticCalibrate = navigateToCalibration
+        onClickAutomaticCalibrate = navigateToCalibration,
+        updateState = vm::updateState
     )
 }
 
@@ -92,8 +90,13 @@ fun SettingsScreen(
     uiState: SettingsUIState,
     onClickChangeIp: () -> Unit,
     onClickAutomaticCalibrate: () -> Unit,
-    onClickManualCalibrate: () -> Unit
+    onClickManualCalibrate: () -> Unit,
+    updateState: () -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        updateState()
+    }
+
     Box(
         modifier = modifier
             .background(
@@ -152,7 +155,7 @@ fun SettingsManualCalibrateChangeDialog(
                     leftValue = it
                 },
                 keyboardType = KeyboardType.Number,
-                label = "Левый край"
+                label = stringResource(R.string.settings_calibrate_left_value_name)
             )
             SettingsModalOutlinedTextField(
                 value = rightValue,
@@ -160,7 +163,7 @@ fun SettingsManualCalibrateChangeDialog(
                     rightValue = it
                 },
                 keyboardType = KeyboardType.Number,
-                label = "Правый край"
+                label = stringResource(R.string.settings_calibrate_right_value_name)
             )
             ARTableButtonCard(
                 modifier = Modifier
@@ -170,7 +173,7 @@ fun SettingsManualCalibrateChangeDialog(
                 onClick = {
                     save(leftValue, rightValue)
                 },
-                text = "Сохранить"
+                text = stringResource(R.string.settings_button_save)
             )
         }
     }
@@ -233,7 +236,7 @@ fun SettingsChangeIPDialog(
                 onValueChange = {
                     currentIP = it
                 },
-                label = "IP адрес"
+                label = stringResource(R.string.settings_ip_label)
             )
             ARTableButtonCard(
                 modifier = Modifier
@@ -243,7 +246,7 @@ fun SettingsChangeIPDialog(
                 onClick = {
                     updateIP(currentIP)
                 },
-                text = "Сохранить"
+                text = stringResource(R.string.settings_button_save)
             )
         }
     }
@@ -386,7 +389,8 @@ fun SettingsScreenPreview() {
             ),
             onClickChangeIp = {},
             onClickAutomaticCalibrate = {},
-            onClickManualCalibrate = {}
+            onClickManualCalibrate = {},
+            updateState = {}
         )
     }
 }

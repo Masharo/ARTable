@@ -3,7 +3,6 @@ package com.masharo.artable.presentation.ui.screen.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.masharo.artable.presentation.model.SettingsUIState
-import com.masharo.artable.usecase.GetCoordinateUseCase
 import com.masharo.artable.usecase.GetIPUseCase
 import com.masharo.artable.usecase.GetSavedCoordinateUseCase
 import com.masharo.artable.usecase.SaveCoordinateUseCase
@@ -25,11 +24,6 @@ class SettingsViewModel(
         SettingsUIState()
     )
     val uiState = _uiState.asStateFlow()
-
-    init {
-        getIP()
-        getCalibrate()
-    }
 
     fun updateIP(value: String) {
         _uiState.update { currentValue ->
@@ -86,7 +80,7 @@ class SettingsViewModel(
         )
     }
 
-    fun updateCalibration(
+    private fun updateCalibration(
         leftValue: String,
         rightValue: String
     ) {
@@ -112,6 +106,11 @@ class SettingsViewModel(
                 isChangeCalibration = value
             )
         }
+    }
+
+    fun updateState() {
+        getIP()
+        getCalibrate()
     }
 
 }

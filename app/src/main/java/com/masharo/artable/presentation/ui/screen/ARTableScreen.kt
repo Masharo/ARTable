@@ -24,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.masharo.artable.presentation.navigation.ARTableNavState
+import com.masharo.artable.presentation.navigation.Calibration
 import com.masharo.artable.presentation.navigation.Demonstration
 import com.masharo.artable.presentation.navigation.Settings
 import com.masharo.artable.presentation.navigation.defaultARTableNavState
@@ -54,9 +55,11 @@ fun ARTableScreen(
                 ARTableBottomNavigationBar(
                     currentScreen = currentScreen,
                     navigateToDemonstration = {
+                        navController.popBackStack()
                         navController.navigate(Demonstration.route)
                     },
                     navigateToSettings = {
+                        navController.popBackStack()
                         navController.navigate(Settings.route)
                     }
                 )
@@ -97,7 +100,7 @@ fun ARTableBottomNavigationBar(
         )
         ARTableBottomNavigationItemSettings(
             modifier = modifier,
-            selected = currentScreen is Settings,
+            selected = currentScreen is Settings || currentScreen is Calibration,
             onClick = navigateToSettings
         )
     }
