@@ -215,7 +215,8 @@ fun DemonstrationImageResource(
         modifier = modifier
             .fillMaxSize()
             .horizontalScroll(
-                state = scrollState
+                state = scrollState,
+                enabled = false
             )
     ) {
         AsyncImage(
@@ -270,7 +271,10 @@ fun DemonstrationVideoResource(
         },
         modifier = modifier
             .fillMaxSize()
-            .horizontalScroll(scrollState)
+            .horizontalScroll(
+                state = scrollState,
+                enabled = false
+            )
             .aspectRatio(aspectRatio)
     )
 }

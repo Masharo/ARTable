@@ -4,6 +4,7 @@ import com.masharo.artable.repository.CoordinateRepository
 import com.masharo.artable.repository.IPRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
 
 class GetCoordinateUseCase(
     private val coordinateRepository: CoordinateRepository,
@@ -12,21 +13,20 @@ class GetCoordinateUseCase(
 
     fun execute(
         param: Param = Param()
-    ): Result {
+    ): Flow<Result> {
         val coordinates = coordinateRepository.getSavedCoordinate() ?: GetSavedCoordinateUseCase.Result(
             positionLeft = 0,
             positionRight = 0
         )
         val result = coordinateRepository.getCoordinateStream(ip = ipRepository.get()?.ip ?: "")
-        return if (param.type == Param.Type.RANGE && result is SuccessResult) {
-            SuccessResult(
-                result
-                    .position
-                    .filter {
-                        it in (coordinates.positionLeft
-                            ?: 0)..(coordinates.positionRight ?: 0)
-                    }
-            )
+        return if (param.type == Param.Type.RANGE) {
+            result.filter { responseResult ->
+                when (responseResult) {
+                    is SuccessResult -> responseResult.position in
+                            (coordinates.positionLeft?: 0)..(coordinates.positionRight ?: 0)
+                    is ErrorResult -> true
+                }
+            }
         } else result
     }
 
@@ -34,7 +34,7 @@ class GetCoordinateUseCase(
 
     data object ErrorResult : Result
     data class SuccessResult(
-        val position: Flow<Long>
+        val position: Long
     ) : Result
 
     data class Param(

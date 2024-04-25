@@ -9,6 +9,7 @@ import com.masharo.artable.service.CoordinateService
 import com.masharo.artable.usecase.GetCoordinateUseCase
 import com.masharo.artable.usecase.GetSavedCoordinateUseCase
 import com.masharo.artable.usecase.SaveCoordinateUseCase
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class CoordinateRepositoryDefault(
@@ -16,12 +17,15 @@ class CoordinateRepositoryDefault(
     private val coordinateDao: CalibrationDao
 ) : CoordinateRepository {
 
-    override fun getCoordinateStream(ip: String): GetCoordinateUseCase.Result {
-        return when (val result = coordinateService.getCoordinate(ip)) {
-            is SuccessCoordinateResponse -> GetCoordinateUseCase.SuccessResult(
-                position = result.coordinate.map { it.position }
-            )
-            is ErrorCoordinateResponse -> GetCoordinateUseCase.ErrorResult
+    override fun getCoordinateStream(ip: String): Flow<GetCoordinateUseCase.Result> {
+        return coordinateService.getCoordinate(ip).map { response ->
+            when (response) {
+                is SuccessCoordinateResponse -> GetCoordinateUseCase.SuccessResult(
+                    position = response.position
+                )
+
+                is ErrorCoordinateResponse -> GetCoordinateUseCase.ErrorResult
+            }
         }
     }
 

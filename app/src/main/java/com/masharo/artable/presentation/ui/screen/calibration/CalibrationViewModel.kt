@@ -31,16 +31,17 @@ class CalibrationViewModel(
 
     fun connect() {
         viewModelScope.launch(Dispatchers.IO) {
-            when (val result = getCoordinateUseCase.execute()) {
-                is GetCoordinateUseCase.SuccessResult ->
-                    result
-                        .position
-                        .collect {
-                            updatePosition(
-                                position = it
-                            )
-                        }
-                is GetCoordinateUseCase.ErrorResult -> {}
+            getCoordinateUseCase.execute().collect { result ->
+                when (result) {
+                    is GetCoordinateUseCase.SuccessResult -> {
+                        updatePosition(
+                            position = result.position
+                        )
+                    }
+                    is GetCoordinateUseCase.ErrorResult -> {
+                        closeConnect()
+                    }
+                }
             }
         }
     }

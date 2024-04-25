@@ -10,7 +10,6 @@ import com.masharo.artable.usecase.GetSavedCoordinateUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -60,7 +59,7 @@ class DemonstrationViewModel(
     fun updateState(value: DemonstrationUIState.State) {
         when (value) {
             DemonstrationUIState.State.PLAY -> connect()
-            DemonstrationUIState.State.PRE_PLAY -> close()
+            DemonstrationUIState.State.PRE_PLAY -> closeConnect()
         }
         _uiState.update { currentValue ->
             currentValue.copy(
@@ -85,7 +84,7 @@ class DemonstrationViewModel(
         }
     }
 
-    private fun close() {
+    private fun closeConnect() {
         viewModelScope.launch(Dispatchers.IO) {
             closeConnectCoordinateUseCase.execute()
         }
@@ -99,16 +98,18 @@ class DemonstrationViewModel(
                 )
             )
 
-            when (result) {
-                is GetCoordinateUseCase.SuccessResult -> result
-                    .position
-                    .collect {
-                        val newPosition = it - minScrollCoefficient
+            result.collect {
+                when (it) {
+                    is GetCoordinateUseCase.SuccessResult -> {
+                        val newPosition = it.position - minScrollCoefficient
                         if (newPosition !in (prevPosition - step)..(prevPosition + step)) {
-                            updatePosition(it - minScrollCoefficient)
+                            updatePosition(it.position - minScrollCoefficient)
                         }
                     }
-                is GetCoordinateUseCase.ErrorResult -> {}
+                    is GetCoordinateUseCase.ErrorResult -> {
+                        closeConnect()
+                    }
+                }
             }
         }
     }
