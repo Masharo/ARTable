@@ -5,12 +5,12 @@ import androidx.compose.ui.graphics.Color
 val DefaultDarkPalette = ARTableColors(
     navigationBackgroundColor = Color(0xFF1B1B1B),
     onNavigationBackgroundColor = Color(0xFFFFFFFF),
-    onNavigationBackgroundAdditionallyColor = Color(0xFFBDAC10),
+    onNavigationBackgroundAdditionallyColor = Color(0xFFFFBA52),
     background = Color(0xFF000000),
     onBackgroundColor = Color(0xFFFFFFFF),
-    secondBackground = Color(0xFFCEC259),
+    secondBackground = Color(0xFFFFD28E),
     onSecondBackground = Color(0xFF000000),
-    thirdBackgroundColor = Color(0xFFBDAC10),
+    thirdBackgroundColor = Color(0xFFFFBA52),
     onThirdBackgroundColor = Color(0xFFFFFFFF),
     onSecondBackgroundAdditionally = Color(0xFF3F3F3F)
 )

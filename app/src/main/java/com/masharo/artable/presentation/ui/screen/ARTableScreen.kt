@@ -14,8 +14,10 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -25,11 +27,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.masharo.artable.presentation.navigation.ARTableNavState
 import com.masharo.artable.presentation.navigation.Calibration
+import com.masharo.artable.presentation.navigation.Contacts
 import com.masharo.artable.presentation.navigation.Demonstration
 import com.masharo.artable.presentation.navigation.Settings
 import com.masharo.artable.presentation.navigation.defaultARTableNavState
 import com.masharo.artable.presentation.navigation.navigationGraphARTable
 import com.masharo.artable.presentation.navigation.toARTableNavState
+import com.masharo.artable.presentation.ui.screen.contacts.ContactsScreen
 import com.masharo.artable.presentation.ui.theme.ARTableThemeState
 
 @Composable
@@ -37,47 +41,59 @@ fun ARTableScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController()
 ) {
+    var isShowStateSplash by rememberSaveable {
+        mutableStateOf(true)
+    }
     val currentScreen = navController
         .currentBackStackEntryAsState()
         .value
         ?.destination
         ?.route
         .toARTableNavState()
-   val isVisibleBottomBar = rememberSaveable {
-       mutableStateOf(true)
-   }
+    val isVisibleBottomBar = rememberSaveable {
+       mutableStateOf(false)
+    }
 
-    Scaffold(
-        modifier = modifier
-            .fillMaxSize(),
-        bottomBar = {
-            if (isVisibleBottomBar.value) {
-                ARTableBottomNavigationBar(
-                    currentScreen = currentScreen,
-                    navigateToDemonstration = {
-                        navController.popBackStack()
-                        navController.navigate(Demonstration.route)
-                    },
-                    navigateToSettings = {
-                        navController.popBackStack()
-                        navController.navigate(Settings.route)
-                    }
-                )
-            }
-        }
-    ) { paddingValues ->
-        NavHost(
-            modifier = Modifier
-                .padding(paddingValues),
-            navController = navController,
-            startDestination = defaultARTableNavState().route,
-            builder = {
-                navigationGraphARTable(
-                    navController = navController,
-                    isVisibleBottomBar = isVisibleBottomBar
-                )
+    if (isShowStateSplash) {
+        ContactsScreen(
+            onClick = {
+                isShowStateSplash = false
+                isVisibleBottomBar.value = true
             }
         )
+    } else {
+        Scaffold(
+            modifier = modifier
+                .fillMaxSize(),
+            bottomBar = {
+                if (isVisibleBottomBar.value) {
+                    ARTableBottomNavigationBar(
+                        currentScreen = currentScreen,
+                        navigateToDemonstration = {
+                            navController.popBackStack()
+                            navController.navigate(Demonstration.route)
+                        },
+                        navigateToSettings = {
+                            navController.popBackStack()
+                            navController.navigate(Settings.route)
+                        }
+                    )
+                }
+            }
+        ) { paddingValues ->
+            NavHost(
+                modifier = Modifier
+                    .padding(paddingValues),
+                navController = navController,
+                startDestination = defaultARTableNavState().route,
+                builder = {
+                    navigationGraphARTable(
+                        navController = navController,
+                        isVisibleBottomBar = isVisibleBottomBar
+                    )
+                }
+            )
+        }
     }
 }
 
@@ -100,7 +116,9 @@ fun ARTableBottomNavigationBar(
         )
         ARTableBottomNavigationItemSettings(
             modifier = modifier,
-            selected = currentScreen is Settings || currentScreen is Calibration,
+            selected =  currentScreen is Settings ||
+                        currentScreen is Calibration ||
+                        currentScreen is Contacts,
             onClick = navigateToSettings
         )
     }

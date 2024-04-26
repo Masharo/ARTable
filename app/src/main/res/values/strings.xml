@@ -21,4 +21,15 @@
     <string name="calibration_move_to_left">Сдвиньте устройство максимально влево</string>
     <string name="calibration_button_start">Начать калибровку</string>
     <string name="calibration_position">Позиция</string>
+
+    <string name="phone_number">+7 962 694 75 02</string>
+    <string name="mail">gavrilovdv1@gmail.com</string>
+    <string name="tg">\@gavrilovdv1</string>
+    <string name="name">Денис Гаврилов</string>
+    <string name="profesion">Изобретатель, патентообладатель, автор</string>
+    <string name="site">siavir-product.ru</string>
+    <string name="copyright">© Все права защищены</string>
+    <string name="button_start">Начать</string>
+    <string name="settings_button_contacts">Контакты</string>
+    <string name="contacts_button_back">Назад</string>
 </resources>

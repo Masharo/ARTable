@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.masharo.artable.presentation.ui.screen.calibration.CalibrationScreen
+import com.masharo.artable.presentation.ui.screen.contacts.ContactsScreen
 import com.masharo.artable.presentation.ui.screen.demonstration.DemonstrationScreen
 import com.masharo.artable.presentation.ui.screen.settings.SettingsScreen
 
@@ -15,6 +16,9 @@ fun NavGraphBuilder.navigationGraphARTable(
     navigateToSettings(
         navigateToCalibration = {
             navController.navigate(Calibration.route)
+        },
+        navigateToContacts = {
+            navController.navigate(Contacts.route)
         }
     )
     navigateToCalibrate(
@@ -23,14 +27,21 @@ fun NavGraphBuilder.navigationGraphARTable(
     navigateToDemonstration(
         isVisibleBottomBar = isVisibleBottomBar
     )
+    navigateToContacts(
+        navigateBack = {
+            navController.popBackStack()
+        }
+    )
 }
 
 fun NavGraphBuilder.navigateToSettings(
-    navigateToCalibration: () -> Unit
+    navigateToCalibration: () -> Unit,
+    navigateToContacts: () -> Unit
 ) {
     composable(route = Settings.route) {
         SettingsScreen(
-            navigateToCalibration = navigateToCalibration
+            navigateToCalibration = navigateToCalibration,
+            navigateToContacts = navigateToContacts
         )
     }
 }
@@ -51,6 +62,17 @@ fun NavGraphBuilder.navigateToDemonstration(
     composable(route = Demonstration.route) {
         DemonstrationScreen(
             isVisibleBottomBar = isVisibleBottomBar
+        )
+    }
+}
+
+fun NavGraphBuilder.navigateToContacts(
+    navigateBack: () -> Unit
+) {
+    composable(route = Contacts.route) {
+        ContactsScreen(
+            onClick = navigateBack,
+            isButtonBack = true
         )
     }
 }

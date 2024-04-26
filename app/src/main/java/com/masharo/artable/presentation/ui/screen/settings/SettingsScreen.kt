@@ -4,12 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -40,7 +44,8 @@ import org.koin.androidx.compose.koinViewModel
 fun SettingsScreen(
     modifier: Modifier = Modifier,
     vm: SettingsViewModel = koinViewModel(),
-    navigateToCalibration: () -> Unit
+    navigateToCalibration: () -> Unit,
+    navigateToContacts: () -> Unit
 ) {
     val uiState by vm.uiState.collectAsState()
 
@@ -80,7 +85,8 @@ fun SettingsScreen(
             vm.updateIsChangeCalibration(true)
         },
         onClickAutomaticCalibrate = navigateToCalibration,
-        updateState = vm::updateState
+        updateState = vm::updateState,
+        onClickContacts = navigateToContacts
     )
 }
 
@@ -91,7 +97,8 @@ fun SettingsScreen(
     onClickChangeIp: () -> Unit,
     onClickAutomaticCalibrate: () -> Unit,
     onClickManualCalibrate: () -> Unit,
-    updateState: () -> Unit
+    updateState: () -> Unit,
+    onClickContacts: () -> Unit
 ) {
     LaunchedEffect(Unit) {
         updateState()
@@ -122,7 +129,38 @@ fun SettingsScreen(
                 onClickAutomaticCalibrate = onClickAutomaticCalibrate,
                 onClickManualCalibrate = onClickManualCalibrate
             )
+            SettingsButtonCard(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = onClickContacts,
+                text = stringResource(R.string.settings_button_contacts)
+            )
         }
+    }
+}
+
+@Composable
+fun ColumnScope.SettingsButtonCard(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    text: String
+) {
+    Button(
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(
+            contentColor = ARTableThemeState.colors.onThirdBackgroundColor,
+            containerColor = ARTableThemeState.colors.thirdBackgroundColor
+        ),
+        shape = RoundedCornerShape(10.dp),
+        onClick = onClick
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(4.dp),
+            text = text,
+            color = ARTableThemeState.colors.onThirdBackgroundColor,
+            style = ARTableThemeState.typography.button
+        )
     }
 }
 
@@ -188,7 +226,8 @@ fun SettingsModalOutlinedTextField(
     onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth(0.8f),
         value = value,
         label = {
             Text(
@@ -390,7 +429,8 @@ fun SettingsScreenPreview() {
             onClickChangeIp = {},
             onClickAutomaticCalibrate = {},
             onClickManualCalibrate = {},
-            updateState = {}
+            updateState = {},
+            onClickContacts = {}
         )
     }
 }
