@@ -186,7 +186,7 @@ fun DemonstrationPlay(
 ) {
     val scrollState = rememberScrollState()
     LaunchedEffect(position) {
-        scrollState.scrollTo(position.toInt() * scrollState.maxValue / scrollCoefficient)
+        if (scrollCoefficient != 0) scrollState.scrollTo(position.toInt() * scrollState.maxValue / scrollCoefficient)
     }
     val windowController = (LocalView.current.context as Activity)
         .window
