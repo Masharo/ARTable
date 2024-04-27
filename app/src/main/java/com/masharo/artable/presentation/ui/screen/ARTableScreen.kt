@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
@@ -134,8 +136,8 @@ fun RowScope.ARTableBottomNavigationItemDemonstration(
         modifier = modifier,
         selected = selected,
         onClick = onClick,
-        imageVector = Icons.Outlined.PlayArrow,
-        imageVectorSelected = Icons.Filled.PlayArrow
+        imageVector = Icons.Outlined.Home,
+        imageVectorSelected = Icons.Filled.Home
     )
 }
 

@@ -132,6 +132,15 @@ fun ConnectErrorDialog(
                 },
                 text = stringResource(R.string.demonstration_error_message_button)
             )
+            ARTableButtonCard(
+                modifier = Modifier
+                    .padding(bottom = 15.dp),
+                onClick = {
+                    updateErrorToFalse()
+                    navigateToPrev()
+                },
+                text = stringResource(R.string.demonstration_error_message_button_close)
+            )
         }
     }
 }

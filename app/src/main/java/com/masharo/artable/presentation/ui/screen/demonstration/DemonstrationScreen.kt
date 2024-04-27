@@ -4,11 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.os.Build
+import android.view.WindowInsetsController
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -40,7 +43,9 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.SoftwareKeyboardControllerCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player.REPEAT_MODE_ALL
@@ -188,14 +193,31 @@ fun DemonstrationPlay(
     LaunchedEffect(position) {
         if (scrollCoefficient != 0) scrollState.scrollTo(position.toInt() * scrollState.maxValue / scrollCoefficient)
     }
-    val windowController = (LocalView.current.context as Activity)
+
+    val window = (LocalView.current.context as Activity)
         .window
-        .decorView
-        .windowInsetsController
-    windowController?.hide(WindowInsetsCompat.Type.systemBars())
+
+    var windowControllerCompat: WindowInsetsControllerCompat? = null
+    var windowInsetsController: WindowInsetsController? = null
+
+    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+        windowControllerCompat = WindowInsetsControllerCompat(window, window.decorView)
+        windowControllerCompat?.hide(WindowInsetsCompat.Type.systemBars())
+    } else {
+        windowInsetsController = (LocalView.current.context as Activity)
+            .window
+            .decorView
+            .windowInsetsController
+        windowInsetsController?.hide(WindowInsetsCompat.Type.systemBars())
+    }
+
     BackHandler {
         navigateToPrePlay()
-        windowController?.show(WindowInsetsCompat.Type.systemBars())
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+            windowControllerCompat?.show(WindowInsetsCompat.Type.systemBars())
+        } else {
+            windowInsetsController?.show(WindowInsetsCompat.Type.systemBars())
+        }
     }
 
     if (hasError) {
@@ -204,7 +226,11 @@ fun DemonstrationPlay(
             updateErrorToFalse = updateErrorToFalse,
             navigateToPrev = {
                 navigateToPrePlay()
-                windowController?.show(WindowInsetsCompat.Type.systemBars())
+                if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+                    windowControllerCompat?.show(WindowInsetsCompat.Type.systemBars())
+                } else {
+                    windowInsetsController?.show(WindowInsetsCompat.Type.systemBars())
+                }
             }
         )
     }
@@ -227,7 +253,11 @@ fun DemonstrationPlay(
         }
     } ?: run {
         navigateToPrePlay()
-        windowController?.show(WindowInsetsCompat.Type.systemBars())
+        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.Q) {
+            windowControllerCompat?.show(WindowInsetsCompat.Type.systemBars())
+        } else {
+            windowInsetsController?.show(WindowInsetsCompat.Type.systemBars())
+        }
     }
 }
 

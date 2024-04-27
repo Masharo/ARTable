@@ -62,7 +62,8 @@ fun BusinessCardBody(
             .fillMaxHeight()
             .verticalScroll(
                 state = rememberScrollState()
-            )
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(
             modifier = Modifier
@@ -76,20 +77,25 @@ fun BusinessCardBody(
             modifier = Modifier
                 .weight(1f)
         )
-        MyContacts(
+        ARTableButtonCard(
             onClick = onClick,
-            isButtonBack = isButtonBack
+            text =  if (isButtonBack) stringResource(R.string.contacts_button_back)
+            else stringResource(R.string.button_start)
         )
+        Spacer(
+            modifier = Modifier
+                .weight(1f)
+        )
+        MyContacts()
     }
 }
 
 @Composable
 private fun MyContacts(
-    onClick: () -> Unit,
-    isButtonBack: Boolean
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(
                 bottom = 30.dp
@@ -129,11 +135,6 @@ private fun MyContacts(
             text = stringResource(R.string.copyright),
             color = ARTableThemeState.colors.onBackgroundColor,
             style = ARTableThemeState.typography.middleText
-        )
-        ARTableButtonCard(
-            onClick = onClick,
-            text =  if (isButtonBack) stringResource(R.string.contacts_button_back)
-                    else stringResource(R.string.button_start)
         )
     }
 }
