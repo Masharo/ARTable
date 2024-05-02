@@ -96,6 +96,7 @@ class CalibrationViewModel(
     ) {
         when (state) {
             CalibrationUIState.State.CALIBRATION_LEFT, CalibrationUIState.State.CALIBRATION_RIGHT -> {
+                closeConnect()
                 connect()
             }
             CalibrationUIState.State.START -> {

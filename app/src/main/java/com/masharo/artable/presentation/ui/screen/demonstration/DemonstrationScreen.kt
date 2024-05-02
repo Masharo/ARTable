@@ -307,7 +307,6 @@ fun DemonstrationVideoResource(
                 exoPlayer.playWhenReady = true
                 exoPlayer.repeatMode = REPEAT_MODE_ALL
                 exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
-                exoPlayer.volume = 0f
             }
     }
 

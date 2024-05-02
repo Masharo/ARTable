@@ -61,7 +61,10 @@ fun CalibrationScreen(
         updateErrorToFalse = {
             vm.updateError(false)
         },
-        navigateBack = navigateBack
+        navigateBack = {
+            navigateBack()
+            vm.closeConnect()
+        }
     )
 }
 
@@ -89,12 +92,12 @@ fun CalibrationScreen(
         CalibrationUIState.State.CALIBRATION_LEFT   -> CalibrationStart(
             modifier = modifier,
             position = uiState.position,
-            text = stringResource(R.string.calibration_move_to_right),
+            text = stringResource(R.string.calibration_move_to_left),
             onClickReady = {
                 saveLeftPosition()
                 navigateToCalibrationRight()
             },
-            icon = Icons.Filled.ArrowForward,
+            icon = Icons.Filled.ArrowBack,
             hasError = uiState.hasError,
             navigateToCalibrationStart = navigateToCalibrationStart,
             reConnect = reConnect,
@@ -103,13 +106,13 @@ fun CalibrationScreen(
         CalibrationUIState.State.CALIBRATION_RIGHT  -> CalibrationStart(
             modifier = modifier,
             position = uiState.position,
-            text = stringResource(R.string.calibration_move_to_left),
+            text = stringResource(R.string.calibration_move_to_right),
             onClickReady = {
                 saveRightPosition()
                 save()
                 navigateBack()
             },
-            icon = Icons.Filled.ArrowBack,
+            icon = Icons.Filled.ArrowForward,
             hasError = uiState.hasError,
             navigateToCalibrationStart = navigateToCalibrationStart,
             reConnect = reConnect,
